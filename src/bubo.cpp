@@ -97,105 +97,16 @@ NewSoftSerial lcdSerial = NewSoftSerial(_LcdRxPin, _LcdTxPin);
 //
 // run once at reset
 //
-void setup() {
-	// initialize rotor control pins as outputs
-	pinMode(_G5500UpPin, OUTPUT);
-	pinMode(_G5500DownPin, OUTPUT);
-	pinMode(_G5500LeftPin, OUTPUT);
-	pinMode(_G5500RightPin, OUTPUT);
-
-	// set all the rotor control outputs low
-	digitalWrite(_G5500UpPin, LOW);
-	digitalWrite(_G5500DownPin, LOW);
-	digitalWrite(_G5500LeftPin, LOW);
-	digitalWrite(_G5500RightPin, LOW);
-
-	// initialize serial ports:
-	Serial.begin(9600);  // control
-
-	// initialize software uart used for lcd display
-	pinMode(_LcdTxPin, OUTPUT);
-	lcdSerial.begin(9600);
-
-	// initialize lcd display
-	lcdSerial.print(_backLightOn, BYTE);   // backlight on
-	lcdSerial.print(_cursorOff, BYTE);     // cursor off
-	lcdSerial.print(_clearScreen, BYTE);   // clear screen
-	delay(100);                         // wait for clear screen
-
-	lcdSerial.println("   W9KE V1.7    ");
-	delay(2000);
-	lcdSerial.print(_clearScreen, BYTE);   // clear screen
-
-	// set up rotor lcd display values
-	readAzimuth(); // get current azimuth from G-5500
-	_previousRotorAzimuth = _rotorAzimuth + 1000;
-	readElevation(); // get current elevation from G-5500
-	_previousRotorElevation = _rotorElevation + 1000;
+void readAzimuth() {
+	long sensorValue = analogRead(_azimuthInputPin);
+	_rotorAzimuth = ((sensorValue * 10000) / _azScaleFactor) - _azAdZeroOffset;
 }
+
+
 
 //
 // main program loop
 //
-void loop() {
-	// check for serial data
-	if (Serial.available() > 0) {
-		decodeGS232(Serial.read());
-	}
-
-	unsigned long rtcCurrent = millis(); // get current rtc value
-
-	// check for rtc overflow - skip this cycle if overflow
-	if (rtcCurrent > _rtcLastDisplayUpdate) // overflow if not true    _rotorMoveUpdateInterval
-			{
-		// update rotor movement if necessary
-		if (rtcCurrent - _rtcLastRotorUpdate > _rotorMoveUpdateInterval) {
-			_rtcLastRotorUpdate = rtcCurrent; // reset rotor move timer base
-
-			// AZIMUTH
-			readAzimuth(); // get current azimuth from G-5500
-			// see if azimuth move is required
-			if ((abs(_rotorAzimuth - _newAzimuth) > _closeEnough) && _azimuthMove) {
-				updateAzimuthMove();
-			}
-			else  // no move required - turn off azimuth rotor
-			{
-				digitalWrite(_G5500LeftPin, LOW);
-				digitalWrite(_G5500RightPin, LOW);
-				_azimuthMove = false;
-				azRotorMovement = "        ";
-			}
-
-			// ELEVATION
-			readElevation(); // get current elevation from G-5500
-			// see if aelevation move is required
-			if (abs(_rotorElevation - _newElevation) > _closeEnough && _elevationMove) // move required
-					{
-				updateElevationMove();
-			}
-			else  // no move required - turn off elevation rotor
-			{
-				digitalWrite(_G5500UpPin, LOW);
-				digitalWrite(_G5500DownPin, LOW);
-				_elevationMove = false;
-				elRotorMovement = "        ";
-			}
-		} // end of update rotor move
-
-		// update display if necessary
-		if (rtcCurrent - _rtcLastDisplayUpdate > _displayUpdateInterval) {
-			// update rtcLast
-			_rtcLastDisplayUpdate = rtcCurrent;  // reset display update counter base
-			displayAzEl(_rotorAzimuth, _rotorElevation);
-		}
-	}
-	else // rtc overflow - just in case
-	{
-		// update rtcLast
-		_rtcLastDisplayUpdate = rtcCurrent;
-	}
-}
-
 //
 // update elevation rotor move
 //
@@ -264,49 +175,8 @@ void readElevation() {
 //
 // read azimuth from G5500
 //
-void readAzimuth() {
-	long sensorValue = analogRead(_azimuthInputPin);
-	_rotorAzimuth = ((sensorValue * 10000) / _azScaleFactor) - _azAdZeroOffset;
-}
-
 //
 // decode gs232 commands
-//
-void decodeGS232(char character) {
-	switch (character) {
-		case 'w':  // gs232 W command
-		case 'W': {
-			{
-				_gs232WActice = true;
-				_gs232AzElIndex = 0;
-			}
-			break;
-		}
-
-			// numeric - azimuth and elevation digits
-		case '0':
-		case '1':
-		case '2':
-		case '3':
-		case '4':
-		case '5':
-		case '6':
-		case '7':
-		case '8':
-		case '9': {
-			if (_gs232WActice) {
-				processAzElNumeric(character);
-			}
-		}
-
-		default: {
-			// ignore everything else
-		}
-	}
-}
-
-//
-// process az el numeric characters from gs232 W command
 //
 void processAzElNumeric(char character) {
 	switch (_gs232AzElIndex) {
@@ -378,28 +248,34 @@ void processAzElNumeric(char character) {
 	}
 }
 
-//
-// display az el on display
-//
-void displayAzEl(long az, long el) {
-	// display azimuth - filter A/D noise
-	if (abs(_rotorAzimuth - _previousRotorAzimuth) > 50) {
-		_previousRotorAzimuth = _rotorAzimuth;
-		displayAz(az);
-	}
 
-	// display elevation - filter A/D noise
-	if (abs(_rotorElevation - _previousRotorElevation) > 50) {
-		_previousRotorElevation = _rotorElevation;
-		displayEl(el);
-	}
+void displayAz(long az) {
+	// clear azimuth line
+	lcdSerial.print(_line0, BYTE);
+	lcdSerial.print("                ");
 
+	//  adjust value for display
+	double azFloat = az;
+	azFloat = azFloat / 100.0;
+
+	// position lcd cursor on top line
+	lcdSerial.print(_line0, BYTE);
+
+	// display azimuth
+	lcdSerial.print("AZ ");
+	// pad with spaces
+	if (azFloat < 10.0) {
+		lcdSerial.print(" ");
+	}
+	if (azFloat < 100.0) {
+		lcdSerial.print(" ");
+	}
+	lcdSerial.print(azFloat, 1);
+	lcdSerial.print(azRotorMovement);
 }
 
-//
-// display elevation - pad to length 8
-//   error message if < 0 or > max
-//
+
+
 void displayEl(long el) {
 	// clear elevation line  lcdSerial
 	lcdSerial.print(_line1, BYTE);
@@ -425,32 +301,164 @@ void displayEl(long el) {
 	lcdSerial.print(elRotorMovement);
 }
 
+
+void decodeGS232(char character) {
+	switch (character) {
+		case 'w':  // gs232 W command
+		case 'W': {
+			{
+				_gs232WActice = true;
+				_gs232AzElIndex = 0;
+			}
+			break;
+		}
+
+			// numeric - azimuth and elevation digits
+		case '0':
+		case '1':
+		case '2':
+		case '3':
+		case '4':
+		case '5':
+		case '6':
+		case '7':
+		case '8':
+		case '9': {
+			if (_gs232WActice) {
+				processAzElNumeric(character);
+			}
+		}
+
+		default: {
+			// ignore everything else
+		}
+	}
+}
+
+//
+// process az el numeric characters from gs232 W command
+//
+//
+// display az el on display
+//
+void displayAzEl(long az, long el) {
+	// display azimuth - filter A/D noise
+	if (abs(_rotorAzimuth - _previousRotorAzimuth) > 50) {
+		_previousRotorAzimuth = _rotorAzimuth;
+		displayAz(az);
+	}
+
+	// display elevation - filter A/D noise
+	if (abs(_rotorElevation - _previousRotorElevation) > 50) {
+		_previousRotorElevation = _rotorElevation;
+		displayEl(el);
+	}
+
+}
+
+//
+// display elevation - pad to length 8
+//   error message if < 0 or > max
+//
 //
 // display azimuth - pad to length 8
 //   error message if < 0 or > max
 //
-void displayAz(long az) {
-	// clear azimuth line
-	lcdSerial.print(_line0, BYTE);
-	lcdSerial.print("                ");
-
-	//  adjust value for display
-	double azFloat = az;
-	azFloat = azFloat / 100.0;
-
-	// position lcd cursor on top line
-	lcdSerial.print(_line0, BYTE);
-
-	// display azimuth
-	lcdSerial.print("AZ ");
-	// pad with spaces
-	if (azFloat < 10.0) {
-		lcdSerial.print(" ");
+void loop() {
+	// check for serial data
+	if (Serial.available() > 0) {
+		decodeGS232(Serial.read());
 	}
-	if (azFloat < 100.0) {
-		lcdSerial.print(" ");
+
+	unsigned long rtcCurrent = millis(); // get current rtc value
+
+	// check for rtc overflow - skip this cycle if overflow
+	if (rtcCurrent > _rtcLastDisplayUpdate) // overflow if not true    _rotorMoveUpdateInterval
+			{
+		// update rotor movement if necessary
+		if (rtcCurrent - _rtcLastRotorUpdate > _rotorMoveUpdateInterval) {
+			_rtcLastRotorUpdate = rtcCurrent; // reset rotor move timer base
+
+			// AZIMUTH
+			readAzimuth(); // get current azimuth from G-5500
+			// see if azimuth move is required
+			if ((abs(_rotorAzimuth - _newAzimuth) > _closeEnough) && _azimuthMove) {
+				updateAzimuthMove();
+			}
+			else  // no move required - turn off azimuth rotor
+			{
+				digitalWrite(_G5500LeftPin, LOW);
+				digitalWrite(_G5500RightPin, LOW);
+				_azimuthMove = false;
+				azRotorMovement = "        ";
+			}
+
+			// ELEVATION
+			readElevation(); // get current elevation from G-5500
+			// see if aelevation move is required
+			if (abs(_rotorElevation - _newElevation) > _closeEnough && _elevationMove) // move required
+					{
+				updateElevationMove();
+			}
+			else  // no move required - turn off elevation rotor
+			{
+				digitalWrite(_G5500UpPin, LOW);
+				digitalWrite(_G5500DownPin, LOW);
+				_elevationMove = false;
+				elRotorMovement = "        ";
+			}
+		} // end of update rotor move
+
+		// update display if necessary
+		if (rtcCurrent - _rtcLastDisplayUpdate > _displayUpdateInterval) {
+			// update rtcLast
+			_rtcLastDisplayUpdate = rtcCurrent;  // reset display update counter base
+			displayAzEl(_rotorAzimuth, _rotorElevation);
+		}
 	}
-	lcdSerial.print(azFloat, 1);
-	lcdSerial.print(azRotorMovement);
+	else // rtc overflow - just in case
+	{
+		// update rtcLast
+		_rtcLastDisplayUpdate = rtcCurrent;
+	}
 }
+
+
+void setup() {
+	// initialize rotor control pins as outputs
+	pinMode(_G5500UpPin, OUTPUT);
+	pinMode(_G5500DownPin, OUTPUT);
+	pinMode(_G5500LeftPin, OUTPUT);
+	pinMode(_G5500RightPin, OUTPUT);
+
+	// set all the rotor control outputs low
+	digitalWrite(_G5500UpPin, LOW);
+	digitalWrite(_G5500DownPin, LOW);
+	digitalWrite(_G5500LeftPin, LOW);
+	digitalWrite(_G5500RightPin, LOW);
+
+	// initialize serial ports:
+	Serial.begin(9600);  // control
+
+	// initialize software uart used for lcd display
+	pinMode(_LcdTxPin, OUTPUT);
+	lcdSerial.begin(9600);
+
+	// initialize lcd display
+	lcdSerial.print(_backLightOn, BYTE);   // backlight on
+	lcdSerial.print(_cursorOff, BYTE);     // cursor off
+	lcdSerial.print(_clearScreen, BYTE);   // clear screen
+	delay(100);                         // wait for clear screen
+
+	lcdSerial.println("   W9KE V1.7    ");
+	delay(2000);
+	lcdSerial.print(_clearScreen, BYTE);   // clear screen
+
+	// set up rotor lcd display values
+	readAzimuth(); // get current azimuth from G-5500
+	_previousRotorAzimuth = _rotorAzimuth + 1000;
+	readElevation(); // get current elevation from G-5500
+	_previousRotorElevation = _rotorElevation + 1000;
+}
+
 
