@@ -102,10 +102,6 @@ void readAzimuth() {
 }
 
 
-
-//
-// main program loop
-//
 //
 // update elevation rotor move
 //
@@ -369,14 +365,15 @@ void loop() {
 		decodeGS232(Serial.read());
 	}
 
-	unsigned long rtcCurrent = millis(); // get current rtc value
+	// get current elapsed time (since program started)
+	unsigned long elapsedTime = millis(); // get current rtc value
 
 	// check for rtc overflow - skip this cycle if overflow
-	if (rtcCurrent > rtcLastDisplayUpdate) // overflow if not true    _rotorMoveUpdateInterval
+	if (elapsedTime > rtcLastDisplayUpdate) // overflow if not true    _rotorMoveUpdateInterval
 			{
 		// update rotor movement if necessary
-		if (rtcCurrent - rtcLastRotorUpdate > rotorMoveUpdateInterval) {
-			rtcLastRotorUpdate = rtcCurrent; // reset rotor move timer base
+		if (elapsedTime - rtcLastRotorUpdate > rotorMoveUpdateInterval) {
+			rtcLastRotorUpdate = elapsedTime; // reset rotor move timer base
 
 			// AZIMUTH
 			readAzimuth(); // get current azimuth from G-5500
@@ -409,22 +406,22 @@ void loop() {
 		} // end of update rotor move
 
 		// update display if necessary
-		if (rtcCurrent - rtcLastDisplayUpdate > displayUpdateInterval) {
+		if (elapsedTime - rtcLastDisplayUpdate > displayUpdateInterval) {
 			// update rtcLast
-			rtcLastDisplayUpdate = rtcCurrent;  // reset display update counter base
+			rtcLastDisplayUpdate = elapsedTime;  // reset display update counter base
 			displayAzEl(rotorAzimuth, rotorElevation);
 		}
 	}
 	else // rtc overflow - just in case
 	{
 		// update rtcLast
-		rtcLastDisplayUpdate = rtcCurrent;
+		rtcLastDisplayUpdate = elapsedTime;
 	}
 }
 
 
 void setup() {
-	// initialize rotor control pins as outputs
+	// initialise rotor control pins as outputs
 	pinMode(G5500UpPin, OUTPUT);
 	pinMode(G5500DownPin, OUTPUT);
 	pinMode(G5500LeftPin, OUTPUT);
@@ -436,20 +433,20 @@ void setup() {
 	digitalWrite(G5500LeftPin, LOW);
 	digitalWrite(G5500RightPin, LOW);
 
-	// initialize serial ports:
+	// initialise serial ports:
 	Serial.begin(9600);  // control
 
-	// initialize software uart used for lcd display
+	// initialise software uart used for lcd display
 	pinMode(LcdTxPin, OUTPUT);
 	lcdSerial.begin(9600);
 
-	// initialize lcd display
+	// initialise lcd display
 	lcdSerial.print(backLightOn, BYTE);   // backlight on
 	lcdSerial.print(cursorOff, BYTE);     // cursor off
 	lcdSerial.print(clearScreen, BYTE);   // clear screen
 	delay(100);                         // wait for clear screen
 
-	lcdSerial.println("   W9KE V1.7    ");
+	lcdSerial.println("BUBO");
 	delay(2000);
 	lcdSerial.print(clearScreen, BYTE);   // clear screen
 
