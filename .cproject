@@ -76,7 +76,7 @@
 								<option id="de.innot.avreclipse.cppcompiler.option.def.208137877" name="Define Syms (-D)" superClass="de.innot.avreclipse.cppcompiler.option.def" valueType="definedSymbols">
 									<listOptionValue builtIn="false" value="ARDUINO=22"/>
 								</option>
-								<option id="de.innot.avreclipse.cppcompiler.option.otherflags.67965314" name="Other flags" superClass="de.innot.avreclipse.cppcompiler.option.otherflags" value="-DARDUINO=22 -g" valueType="string"/>
+								<option id="de.innot.avreclipse.cppcompiler.option.otherflags.67965314" name="Other flags" superClass="de.innot.avreclipse.cppcompiler.option.otherflags" value="-DARDUINO=22" valueType="string"/>
 								<inputType id="de.innot.avreclipse.cppcompiler.input.643595148" superClass="de.innot.avreclipse.cppcompiler.input"/>
 							</tool>
 							<tool id="de.innot.avreclipse.tool.linker.winavr.app.debug.758700174" name="AVR C Linker" superClass="de.innot.avreclipse.tool.linker.winavr.app.debug"/>
