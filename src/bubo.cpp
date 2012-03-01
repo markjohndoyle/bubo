@@ -157,7 +157,8 @@ void updateAzimuthMove() {
 // read azimuth from G5500
 //
 void readElevation() {
-	long sensorValue = analogRead(elevationInputPin);
+//	long sensorValue = analogRead(elevationInputPin);
+	long sensorValue = 0;
 	rotorElevation = (sensorValue * 10000) / elScaleFactor;
 }
 
@@ -291,6 +292,7 @@ void decodeGS232(char character) {
 	case 'w': // gs232 W command
 	case 'W': {
 		{
+			Serial.println("W command active");
 			gs232WActive = true;
 			gs232AzElIndex = 0;
 		}
@@ -423,18 +425,19 @@ void setup() {
 	Serial.begin(9600); // control
 
 	// initialise software uart used for lcd display
-	pinMode(LcdTxPin, OUTPUT);
-	lcdSerial.begin(9600);
+//	pinMode(LcdTxPin, OUTPUT);
+//	lcdSerial.begin(9600);
 
 	// initialise lcd display
-	lcdSerial.print(backLightOn, BYTE); // backlight on
-	lcdSerial.print(cursorOff, BYTE); // cursor off
-	lcdSerial.print(clearScreen, BYTE); // clear screen
-	delay(100); // wait for clear screen
+//	lcdSerial.print(backLightOn, BYTE); // backlight on
+//	lcdSerial.print(cursorOff, BYTE); // cursor off
+//	lcdSerial.print(clearScreen, BYTE); // clear screen
+//	delay(100); // wait for clear screen
 
-	lcdSerial.println("BUBO");
+	Serial.println("BUBO");
+//	lcdSerial.println("BUBO");
 	delay(2000);
-	lcdSerial.print(clearScreen, BYTE); // clear screen
+//	lcdSerial.print(clearScreen, BYTE); // clear screen
 
 	// set up rotor lcd display values
 	readAzimuth(); // get current azimuth from G-5500
