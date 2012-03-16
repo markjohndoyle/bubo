@@ -291,11 +291,9 @@ void decodeGS232(char character) {
 	switch (character) {
 	case 'w': // gs232 W command
 	case 'W': {
-		{
 			Serial.println("W command active");
 			gs232WActive = true;
 			gs232AzElIndex = 0;
-		}
 		break;
 	}
 
