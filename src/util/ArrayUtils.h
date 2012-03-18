@@ -2,21 +2,23 @@
  * ArrayUtils.h
  *
  *  Created on: Nov 19, 2011
- *      Author: mark
+ *      Author: Mark Doyle
  */
 
 #ifndef ARRAYUTILS_H_
 #define ARRAYUTILS_H_
 
-#include <WProgram.h>
+#include "Arduino.h"
 
 namespace util {
 
 class ArrayUtils {
 
 	private:
-		ArrayUtils();
-		virtual ~ArrayUtils();
+		/** private; cannot instantiate utility class. */
+		ArrayUtils() {};
+		/** private; cannot instantiate utility class. */
+		virtual ~ArrayUtils() {};
 
 	public:
 		enum BASE {BASE_BYTE = 0, BASE_BIN = 2, BASE_OCT = 8, BASE_DEC = 10, BASE_HEX = 16};

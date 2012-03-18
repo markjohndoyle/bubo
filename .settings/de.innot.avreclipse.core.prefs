@@ -1,4 +1,4 @@
-#Thu Mar 01 12:32:58 CET 2012
+#Sat Mar 17 23:04:59 CET 2012
 avrtarget/ClockFrequency=16000000
 avrtarget/ExtRAMSize=0
 avrtarget/ExtendedRAM=false
@@ -8,25 +8,25 @@ avrtarget/UseExtendedRAMforHeap=true
 avrtarget/avrdude/BitBangDelay=
 avrtarget/avrdude/Bitclock=
 avrtarget/avrdude/EEPROMFile=
-avrtarget/avrdude/EEPROMFromConfig=true
+avrtarget/avrdude/EEPROMFromConfig=false
 avrtarget/avrdude/FlashFile=
 avrtarget/avrdude/FlashFromConfig=true
 avrtarget/avrdude/Fuses/ByteValues=-1\:-1\:-1
 avrtarget/avrdude/Fuses/FileName=
 avrtarget/avrdude/Fuses/MCUid=atmega328p
-avrtarget/avrdude/Fuses/UseFile=true
+avrtarget/avrdude/Fuses/UseFile=false
 avrtarget/avrdude/Fuses/Write=false
 avrtarget/avrdude/Locks/ByteValues=-1
 avrtarget/avrdude/Locks/FileName=dv
 avrtarget/avrdude/Locks/MCUid=atmega2560
-avrtarget/avrdude/Locks/UseFile=true
+avrtarget/avrdude/Locks/UseFile=false
 avrtarget/avrdude/Locks/Write=false
 avrtarget/avrdude/NoChipErase=true
 avrtarget/avrdude/NoSigCheck=false
 avrtarget/avrdude/NoVerify=false
 avrtarget/avrdude/NoWrite=false
-avrtarget/avrdude/OtherOptions=
-avrtarget/avrdude/ProgrammerID=programmerconfig.2
+avrtarget/avrdude/OtherOptions=-patmega2560
+avrtarget/avrdude/ProgrammerID=programmerconfig.1
 avrtarget/avrdude/UseCounter=false
 avrtarget/avrdude/WriteEEPROM=false
 avrtarget/avrdude/WriteFlash=true
