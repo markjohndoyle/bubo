@@ -21,6 +21,8 @@ IPAddress gateway(192, 168, 0, 1);
 /** Server network subnet */
 IPAddress subnet(255, 255, 0, 0);
 
+EthernetClient client;
+
 // ------------------------------------------------------------
 // ---------- you may wish to adjust these values -------------
 // ------------------------------------------------------------
@@ -129,13 +131,13 @@ void updateAzimuthMove() {
 	// calculate rotor move
 	long rotorMoveAz = newAzimuth - rotorAzimuth;
 	// adjust move if necessary
-	if (rotorMoveAz > 18000) // adjust move if > 180 degrees
-			{
+	// adjust move if > 180 degrees
+	if (rotorMoveAz > 18000) {
 		rotorMoveAz = rotorMoveAz - 180;
 	}
 	else {
-		if (rotorMoveAz < -18000) // adjust move if < -180 degrees
-				{
+		// adjust move if < -180 degrees
+		if (rotorMoveAz < -18000) {
 			rotorMoveAz = rotorMoveAz + 18000;
 		}
 	}
@@ -179,13 +181,11 @@ void processAzElNumeric(char character) {
 			gs232AzElIndex++;
 			break;
 		}
-
 		case 1: {
 			azimuthTemp = azimuthTemp + (character - 48) * 10;
 			gs232AzElIndex++;
 			break;
 		}
-
 		case 2: // final azimuth character
 		{
 			azimuthTemp = azimuthTemp + (character - 48);
@@ -199,20 +199,17 @@ void processAzElNumeric(char character) {
 			}
 			break;
 		}
-
 		case 3: // first elevation character
 		{
 			elevationTemp = (character - 48) * 100;
 			gs232AzElIndex++;
 			break;
 		}
-
 		case 4: {
 			elevationTemp = elevationTemp + (character - 48) * 10;
 			gs232AzElIndex++;
 			break;
 		}
-
 		case 5: // last elevation character
 		{
 			elevationTemp = elevationTemp + (character - 48);
@@ -226,12 +223,12 @@ void processAzElNumeric(char character) {
 			}
 			else // both azimuth and elevation are ok
 			{
-				Serial.println(newAzimuth + " : " + newElevation);
 				// set up for rotor move
 				newAzimuth = azimuthTemp * 100;
 				newElevation = elevationTemp * 100;
 				azimuthMove = true;
 				elevationMove = true;
+				client.println("Valid azimuth and elevation");
 			}
 			break;
 		}
@@ -293,7 +290,6 @@ void processAzElNumeric(char character) {
 //}
 
 void decodeGS232(char character) {
-	Serial.println("Received " + character);
 	switch (character) {
 		case 'w': // gs232 W command
 		case 'W': {
@@ -302,7 +298,6 @@ void decodeGS232(char character) {
 			gs232AzElIndex = 0;
 			break;
 		}
-
 			// numeric - azimuth and elevation digits
 		case '0':
 		case '1':
@@ -319,7 +314,6 @@ void decodeGS232(char character) {
 			}
 			break;
 		}
-
 		default: {
 			// ignore everything else
 			break;
@@ -356,71 +350,31 @@ void displayAzEl(long az, long el) {
 // display azimuth - pad to length 8
 //   error message if < 0 or > max
 //
-void loop() {
-	EthernetClient client = server.available();
+
+void checkForCommand() {
+	client = server.available();
 
 	if (client) {
-		if(client.available() > 0) {
-			byte inByte = client.read();
+		if (client.available() > 0) {
+			char inByte = client.read();
+			client.println(inByte);
 			decodeGS232(inByte);
 		}
 	}
+}
 
-	// check for serial data
-//	if (Serial.available() > 0) {
-//		decodeGS232(Serial.read());
-//	}
+void stopAzimuthRotar() {
+	digitalWrite(G5500LeftPin, LOW);
+	digitalWrite(G5500RightPin, LOW);
+	azimuthMove = false;
+//	azRotorMovement = "        ";
+}
 
-	// get current elapsed time (since program started)
-	unsigned long elapsedTime = millis(); // get current rtc value
-
-	// check for rtc overflow - skip this cycle if overflow
-	if (elapsedTime > rtcLastDisplayUpdate) // overflow if not true    _rotorMoveUpdateInterval
-			{
-		// update rotor movement if necessary
-		if (elapsedTime - rtcLastRotorUpdate > rotorMoveUpdateInterval) {
-			rtcLastRotorUpdate = elapsedTime; // reset rotor move timer base
-
-			// AZIMUTH
-			readAzimuth(); // get current azimuth from G-5500
-			// see if azimuth move is required
-			if ((abs(rotorAzimuth - newAzimuth) > closeEnough) && azimuthMove) {
-				updateAzimuthMove();
-			}
-			else // no move required - turn off azimuth rotor
-			{
-				digitalWrite(G5500LeftPin, LOW);
-				digitalWrite(G5500RightPin, LOW);
-				azimuthMove = false;
-				azRotorMovement = "        ";
-			}
-
-			// ELEVATION
-			readElevation(); // get current elevation from G-5500
-			// see if an elevation move is required
-			if (abs(rotorElevation - newElevation) > closeEnough && elevationMove) {
-				updateElevationMove();
-			}
-			else {
-				digitalWrite(G5500UpPin, LOW);
-				digitalWrite(G5500DownPin, LOW);
-				elevationMove = false;
-				elRotorMovement = "        ";
-			}
-		} // end of update rotor move
-
-		// update display if necessary
-		//		if (elapsedTime - rtcLastDisplayUpdate > displayUpdateInterval) {
-		//			// update rtcLast
-		//			rtcLastDisplayUpdate = elapsedTime;  // reset display update counter base
-		//			displayAzEl(rotorAzimuth, rotorElevation);
-		//		}
-	}
-	else // rtc overflow - just in case
-	{
-		// update rtcLast
-		rtcLastDisplayUpdate = elapsedTime;
-	}
+void stopElevationRotar() {
+	digitalWrite(G5500UpPin, LOW);
+	digitalWrite(G5500DownPin, LOW);
+	elevationMove = false;
+//	elRotorMovement = "        ";
 }
 
 void disengageAllRotorPins() {
@@ -431,18 +385,69 @@ void disengageAllRotorPins() {
 	digitalWrite(G5500RightPin, LOW);
 }
 
+void rotate(unsigned long& elapsedTime) {
+	// update rotor movement if necessary
+	if (elapsedTime - rtcLastRotorUpdate > rotorMoveUpdateInterval) {
+		// reset rotor move timer base
+		rtcLastRotorUpdate = elapsedTime;
+
+		// AZIMUTH
+		// get current azimuth from G-5500
+		readAzimuth();
+		// see if azimuth move is required
+		if ((abs(rotorAzimuth - newAzimuth) > closeEnough) && azimuthMove) {
+			updateAzimuthMove();
+		}
+		else {
+			stopAzimuthRotar()();
+		}
+
+		// ELEVATION
+		// get current elevation from G-5500
+		readElevation();
+		// see if an elevation move is required
+		if (abs(rotorElevation - newElevation) > closeEnough && elevationMove) {
+			updateElevationMove();
+		}
+		else {
+			stopElevationRotar();
+		}
+	}
+}
+
+/**
+ * MAIN EVENT LOOP
+ *
+ * States:
+ * 		1. Command phase.
+ * 		2. Rotate phase.
+ */
+void loop() {
+	checkForCommand();
+
+	// get current elapsed time
+	unsigned long elapsedTime = millis();
+
+	// check for rtc overflow - skip this cycle if overflow
+	// overflow if not true    _rotorMoveUpdateInterval
+	if (elapsedTime > rtcLastDisplayUpdate) {
+		rotate(elapsedTime);
+	}
+	// rtc overflow - just in case
+	else {
+		// update rtcLast
+		rtcLastDisplayUpdate = elapsedTime;
+	}
+}
+
 bool setupEthernetServer() {
 	// start the Ethernet connection:
 	Serial.println("Trying to get an IP address using DHCP");
-	digitalWrite(G5500DownPin, HIGH);
-	digitalWrite(G5500RightPin, HIGH);
 
 	if (Ethernet.begin(mac) == 0) {
 		Serial.print("Ethernet unavailable, DHCP failed");
 		return false;
 	}
-	digitalWrite(G5500UpPin, HIGH);
-	digitalWrite(G5500LeftPin, HIGH);
 
 	server.begin();
 
@@ -458,13 +463,8 @@ bool setupEthernetServer() {
 
 	Serial.println();
 
-
-	delay(2000);
-	disengageAllRotorPins();
-
 	return true;
 }
-
 
 void setup() {
 	// initialise rotor control pins as outputs
@@ -502,7 +502,6 @@ void setup() {
 	previousRotorAzimuth = rotorAzimuth + 1000;
 	readElevation(); // get current elevation from G-5500
 	previousRotorElevation = rotorElevation + 1000;
-
 
 	setupEthernetServer();
 }
