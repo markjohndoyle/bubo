@@ -460,12 +460,16 @@ void loop() {
 	}
 }
 
+/**
+ * Return bool true on success.
+ */
 bool setupEthernetServer() {
 	// start the Ethernet connection:
 	lcd.clear();
 	lcd.print("Requesting IP");
 
 	if (Ethernet.begin(mac) == 0) {
+		lcd.clear();
 		lcd.print("No IP from DHCP");
 		return false;
 	}
@@ -539,11 +543,13 @@ void setup() {
 
 	rotorAllStop();
 
-	error = setupEthernetServer();
+	if(!setupEthernetServer()) {
+		error = true;
+	}
 
 
-	lcd.clear();
 	if(!error) {
+		lcd.clear();
 		lcd.print("Boot ok");
 	}
 }
