@@ -58,7 +58,7 @@ void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
 	// SEE PAGE 45/46 FOR INITIALIZATION SPECIFICATION!
 	// according to datasheet, we need at least 40ms after power rises above 2.7V
 	// before sending commands. Arduino can turn on way befer 4.5V so we'll wait 50
-	delayMicroseconds(50000); 
+	delayMicroseconds(50000);
   
 	// Now we pull both RS and R/W low to begin commands
 	expanderWrite(_backlightval);	// reset expanderand turn backlight off (Bit 8 =1)
@@ -77,7 +77,7 @@ void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
 	delayMicroseconds(4500); // wait min 4.1ms
 	
 	// third go!
-	write4bits(0x03); 
+	write4bits(0x03);
 	delayMicroseconds(150);
 	
 	// finally, set to 4-bit interface
@@ -93,7 +93,7 @@ void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
 	
 	// clear it off
 	clear();
-	
+
 	// Initialize to default text direction (for roman languages)
 	_displaymode = LCD_ENTRYLEFT | LCD_ENTRYSHIFTDECREMENT;
 	
@@ -109,7 +109,7 @@ void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
 /********** high level commands, for the user! */
 void LiquidCrystal_I2C::clear(){
 	command(LCD_CLEARDISPLAY);// clear display, set cursor position to zero
-	delayMicroseconds(2000);  // this command takes a long time!
+	delayMicroseconds(6000);  // this command takes a long time!
 }
 
 void LiquidCrystal_I2C::home(){
