@@ -97,11 +97,22 @@ String azRotorMovement; // string for az rotor move display
 String elRotorMovement; // string for el rotor move display
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // set the LCD address to 0x20 for a 16 chars and 2 line display
-//const uint8_t LCD = 0x40;
 
+/**
+ * Returns a String of Bubo's IP address.
+ */
+String ipToString() {
+	ip = Ethernet.localIP();
+	String ipStr;
+	for (byte thisByte = 0; thisByte < 4; thisByte++) {
+		// print the value of each byte of the IP address:
+		ipStr += ip[thisByte];
+		ipStr += ".";
+	}
+	return ipStr;
+}
 
 // run once at reset
-//
 void readAzimuth() {
 	long sensorValue = analogRead(azimuthInputPin);
 	rotorAzimuth = ((sensorValue * 10000) / azScaleFactor) - azAdZeroOffset;
@@ -295,11 +306,28 @@ void processAzElNumeric(char character) {
 //	lcdSerial.print(elRotorMovement);
 //}
 
-void decodeGS232(char character) {
+void printIpToAllUserOuts() {
+	String ip = ipToString();
+	// to LCD Display
+	lcd.clear();
+	lcd.print("IP address:");
+	lcd.setCursor(0, 1);
+	lcd.print(ip);
+
+	Serial.print("IP address:");
+	Serial.println(ip);
+
+	client.print("IP address:");
+	client.println(ip);
+	client.println();
+}
+
+void decodeCommand(char character) {
 	switch (character) {
-		case 'w': // gs232 W command
+		// gs232 W command
+		case 'w':
 		case 'W': {
-			Serial.println("W command started");
+			client.println("W command started");
 			gs232WActive = true;
 			gs232AzElIndex = 0;
 			break;
@@ -321,12 +349,7 @@ void decodeGS232(char character) {
 			break;
 		}
 		case 'i': {
-			for (byte thisByte = 0; thisByte < 4; thisByte++) {
-				// print the value of each byte of the IP address:
-				Serial.print(ip[thisByte], DEC);
-				Serial.print(".");
-			}
-			Serial.println();
+			printIpToAllUserOuts();
 			break;
 		}
 		default: {
@@ -372,14 +395,14 @@ void checkForCommand() {
 	if (client) {
 		if (client.available() > 0) {
 			char inByte = client.read();
-			client.println(inByte);
-			decodeGS232(inByte);
+			decodeCommand(inByte);
 		}
 	}
 
+	// Also check in serial interface. Good for development/debugging.
 	if (Serial.available() > 0) {
 		char inSerialByte = Serial.read();
-		decodeGS232(inSerialByte);
+		decodeCommand(inSerialByte);
 	}
 }
 
@@ -479,12 +502,6 @@ bool setupEthernetServer() {
 	// print local IP address to LCD screen.
 	// TODO change from serial to LCD screen print.
 	Serial.print("My IP address: ");
-	ip = Ethernet.localIP();
-	for (byte thisByte = 0; thisByte < 4; thisByte++) {
-		// print the value of each byte of the IP address:
-		Serial.print(ip[thisByte], DEC);
-		Serial.print(".");
-	}
 
 	Serial.println();
 
@@ -495,13 +512,10 @@ void setup() {
 	bool error = false;
 
 	lcd.init();
-	delay(1000);
 	lcd.backlight();
-	delay(1000);
 	lcd.clear();
-	delay(1000);
+	delay(100);
 	lcd.print("Bubo booting...");
-	delay(1000);
 
 	// initialise rotor control pins as outputs
 	pinMode(G5500UpPin, OUTPUT);
@@ -520,21 +534,6 @@ void setup() {
 	// initialise serial ports:
 	Serial.begin(9600); // control
 
-	// initialise software uart used for lcd display
-	//	pinMode(LcdTxPin, OUTPUT);
-	//	lcdSerial.begin(9600);
-
-	// initialise lcd display
-	//	lcdSerial.print(backLightOn, BYTE); // backlight on
-	//	lcdSerial.print(cursorOff, BYTE); // cursor off
-	//	lcdSerial.print(clearScreen, BYTE); // clear screen
-	//	delay(100); // wait for clear screen
-
-	Serial.println("BUBO");
-	//	lcdSerial.println("BUBO");
-	delay(2000);
-	//	lcdSerial.print(clearScreen, BYTE); // clear screen
-
 	// set up rotor lcd display values
 	readAzimuth(); // get current azimuth from G-5500
 	previousRotorAzimuth = rotorAzimuth + 1000;
@@ -543,14 +542,15 @@ void setup() {
 
 	rotorAllStop();
 
-	if(!setupEthernetServer()) {
+	if (!setupEthernetServer()) {
 		error = true;
 	}
 
-
-	if(!error) {
+	if (!error) {
 		lcd.clear();
 		lcd.print("Boot ok");
+		lcd.setCursor(0, 1);
+		lcd.print(ipToString());
 	}
 }
 
