@@ -434,26 +434,33 @@ void rotate(unsigned long& elapsedTime) {
 		// reset rotor move timer base
 		rtcLastRotorUpdate = elapsedTime;
 
-		// AZIMUTH
-		// get current azimuth from G-5500
-		readAzimuth();
-		// see if azimuth move is required
-		if ((abs(rotorAzimuth - newAzimuth) > closeEnough) && azimuthMove) {
-			updateAzimuthMove();
-		}
-		else {
-			stopAzimuthRotor();
-		}
+		if (azimuthMove || elevationMove) {
+			lcd.clear();
+			lcd.print("Rotating:");
+			lcd.setCursor(0, 1);
+			// AZIMUTH
+			// get current azimuth from G-5500
+			readAzimuth();
+			// see if azimuth move is required
+			if ((abs(rotorAzimuth - newAzimuth) > closeEnough)) {
+				updateAzimuthMove();
+				lcd.print("Az->" + (String)newAzimuth);
+			}
+			else {
+				stopAzimuthRotor();
+			}
 
-		// ELEVATION
-		// get current elevation from G-5500
-		readElevation();
-		// see if an elevation move is required
-		if (abs(rotorElevation - newElevation) > closeEnough && elevationMove) {
-			updateElevationMove();
-		}
-		else {
-			stopElevationRotor();
+			// ELEVATION
+			// get current elevation from G-5500
+			readElevation();
+			// see if an elevation move is required
+			if (abs(rotorElevation - newElevation) > closeEnough) {
+				updateElevationMove();
+				lcd.print("El->" + (String)newElevation);
+			}
+			else {
+				stopElevationRotor();
+			}
 		}
 	}
 }
@@ -548,6 +555,7 @@ void setup() {
 
 	if (!error) {
 		lcd.clear();
+		delay(100);
 		lcd.print("Boot ok");
 		lcd.setCursor(0, 1);
 		lcd.print(ipToString());

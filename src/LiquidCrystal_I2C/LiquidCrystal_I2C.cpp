@@ -67,7 +67,6 @@ void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
   	//put the LCD into 4 bit mode
 	// this is according to the hitachi HD44780 datasheet
 	// figure 24, pg 46
-	
 	// we start in 8bit mode, try to set 4 bit mode
 	write4bits(0x03);
 	delayMicroseconds(4500); // wait min 4.1ms
@@ -109,12 +108,12 @@ void LiquidCrystal_I2C::begin(uint8_t cols, uint8_t lines, uint8_t dotsize) {
 /********** high level commands, for the user! */
 void LiquidCrystal_I2C::clear(){
 	command(LCD_CLEARDISPLAY);// clear display, set cursor position to zero
-	delayMicroseconds(6000);  // this command takes a long time!
+	delayMicroseconds(10000);  // this command takes a long time!
 }
 
 void LiquidCrystal_I2C::home(){
 	command(LCD_RETURNHOME);  // set cursor position to zero
-	delayMicroseconds(2000);  // this command takes a long time!
+	delayMicroseconds(8000);  // this command takes a long time!
 }
 
 void LiquidCrystal_I2C::setCursor(uint8_t col, uint8_t row){
@@ -253,10 +252,10 @@ void LiquidCrystal_I2C::expanderWrite(uint8_t _data){
 
 void LiquidCrystal_I2C::pulseEnable(uint8_t _data){
 	expanderWrite(_data | En);	// En high
-	delayMicroseconds(1);		// enable pulse must be >450ns
+	delayMicroseconds(10);		// enable pulse must be >450ns
 	
 	expanderWrite(_data & ~En);	// En low
-	delayMicroseconds(50);		// commands need > 37us to settle
+	delayMicroseconds(100);		// commands need > 37us to settle
 } 
 
 
