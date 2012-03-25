@@ -33,6 +33,22 @@ class RotorController : public CommandListener {
 
 		void setRotorMoveUpdateInterval(unsigned long newRotorMoveUpdateInterval);
 
+		long getCurrentAzimuth() const {
+			return currentAzimuth;
+		}
+
+		long getCurrentElevation() const {
+			return currentElevation;
+		}
+
+		long getTargetAzimuth() const {
+			return targetAzimuth;
+		}
+
+		long getTargetElevation() const {
+			return targetElevation;
+		}
+
 		long getAzimuthaAdZeroOffset() const {
 			return this->azimuthaAdZeroOffset;
 		}
@@ -47,6 +63,14 @@ class RotorController : public CommandListener {
 
 		void setElevationAdZeroOffset(long newOffset) {
 			this->elevationAdZeroOffset = newOffset;
+		}
+
+		bool isRotatingAzimuth() const {
+			return this->rotatingElevation;
+		}
+
+		bool isRotatingElevation() const {
+			return this->rotatingElevation;
 		}
 
 	private:
@@ -108,8 +132,8 @@ class RotorController : public CommandListener {
 
 		unsigned long rotorMoveUpdateInterval;
 
-		bool azimuthMove;
-		bool elevationMove;
+		bool rotatingAzimuth;
+		bool rotatingElevation;
 
 		long targetAzimuth;
 		long targetElevation;

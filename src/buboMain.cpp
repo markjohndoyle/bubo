@@ -10,11 +10,15 @@
 #include "LiquidCrystal_I2C/LiquidCrystal_I2C.h"
 #include "bubo/RotorController.hpp"
 #include "bubo/CommandProcessor.hpp"
+#include "bubo/TelemetryPayload.hpp"
 
 static byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0x8E, 0x5B };
 
-/** The Ethernet Server */
-EthernetServer server(23);
+/** The Ethernet Server that listens for commands */
+EthernetServer commandServer(23);
+
+/** The Ethernet Server that outputs TM. Connections are ignored */
+EthernetServer tmServer(54780);
 
 // TODO For future static assigned IP
 /** Server IP */
@@ -26,59 +30,6 @@ IPAddress subnet(255, 255, 240, 0);
 
 EthernetClient client;
 
-// ------------------------------------------------------------
-// ---------- you may wish to adjust these values -------------
-// ------------------------------------------------------------
-
-// A/D converter parameters
-/*
- AFTER you have adjusted your G-5500 control box as per the manual
- adjust the next 4 parameters. The settings interact a bit so you may have
- to go back and forth a few times. Remember the G-5500 rotors are not all that
- accurate (within 4 degrees at best) so try not to get too compulsive when
- making these adjustments.
- */
-const long azAdZeroOffset = 325; // adjust to zero out lcd az reading when control box az = 0
-const long elAdZeroOffset = 0; // adjust to zero out lcd el reading when control box el = 0
-
-/*
- 10 bit A/D converters in the Arduino have a max value of 1023
- for the azimuth the A/D value of 1023 should correspond to 450 degrees
- for the elevation the A/D value of 1023 should correspond to 180 degrees
- integer math is used so the scale value is multiplied by 100 to maintain accuracy
- the scale factor should be 100 * (1023 / 450) for the azimuth
- the scale factor should be 100 * (1023 / 180) for the elevation
- */
-const long azScaleFactor = 232; //  adjust as needed
-const long elScaleFactor = 568; //  adjust as needed
-
-// pins
-const byte G5500UpPin = 4; // elevation rotor up control line
-const byte G5500DownPin = 5; // elevation rotor down control line
-const byte G5500LeftPin = 8; // azimuth rotor left control line
-const byte G5500RightPin = 9; // azimuth rotor right control line
-
-// FIXME reserved for Ethernet SD card. Change.
-const byte azimuthInputPin = A0; // azimuth analog signal from G5500
-const byte elevationInputPin = A1; // elevation analog signal from G5500
-
-// take care if you lower this value -  wear or dirt on the pots in your rotors
-// or A/D converter jitter may cause hunting if the value is too low.
-long closeEnough = 100; // tolerance for az-el match in rotor move in degrees * 100
-
-// ------------------------------------------------------------
-// ------ values from here down should not need adjusting -----
-// ------------------------------------------------------------
-// rotor
-const long maxRotorAzimuth = 45000L; // maximum rotor azimuth in degrees * 100
-const long maxRotorElevation = 18000L; // maximum rotor elevation in degrees * 100
-
-long rotorAzimuth = 0L; // current rotor azimuth in degrees * 100
-long rotorElevation = 0L; // current rotor azimuth in degrees * 100
-long azimuthTemp = 0L; // used for gs232 azimuth decoding
-long elevationTemp = 0L; // used for gs232 elevation decoding
-long newAzimuth = 0L; // new azimuth for rotor move
-long newElevation = 0L; // new elevation for rotor move
 long previousRotorAzimuth = 0L; // previous rotor azimuth in degrees * 100
 long previousRotorElevation = 0L; // previous rotor azimuth in degrees * 100
 
@@ -86,11 +37,6 @@ unsigned long rtcLastDisplayUpdate = 0UL; // rtc at start of last loop
 unsigned long rtcLastRotorUpdate = 0UL; // rtc at start of last loop
 unsigned long displayUpdateInterval = 500UL; // display update interval in mS
 unsigned long rotorMoveUpdateInterval = 100UL; // rotor move check interval in mS
-
-boolean gs232WActive = false; // gs232 W command in process
-int gs232AzElIndex = 0; // position in gs232 Az El sequence
-long gs232Azimuth = 0; // gs232 Azimuth value
-long gs232Elevation = 0; // gs232 Elevation value
 
 boolean azimuthMove = false; // azimuth move needed
 boolean elevationMove = false; // elevation move needed
@@ -114,150 +60,6 @@ String ipToString() {
 		ipStr += ".";
 	}
 	return ipStr;
-}
-
-// run once at reset
-//void readAzimuth() {
-//	long sensorValue = analogRead(azimuthInputPin);
-//	rotorAzimuth = ((sensorValue * 10000) / azScaleFactor) - azAdZeroOffset;
-//}
-
-//
-// update elevation rotor move
-//
-void updateElevationMove() {
-	// calculate rotor move
-	long rotorMoveEl = newElevation - rotorElevation;
-
-	if (rotorMoveEl > 0) {
-		elRotorMovement = "  U ";
-		elRotorMovement = elRotorMovement + String(newElevation / 100);
-		digitalWrite(G5500DownPin, LOW);
-		digitalWrite(G5500UpPin, HIGH);
-	}
-	else {
-		if (rotorMoveEl < 0) {
-			elRotorMovement = "  D ";
-			elRotorMovement = elRotorMovement + String(newElevation / 100);
-			digitalWrite(G5500UpPin, LOW);
-			digitalWrite(G5500DownPin, HIGH);
-		}
-	}
-}
-
-//
-// update azimuth rotor move
-//
-void updateAzimuthMove() {
-	// calculate rotor move
-	long rotorMoveAz = newAzimuth - rotorAzimuth;
-	// adjust move if necessary
-	// adjust move if > 180 degrees
-	if (rotorMoveAz > 18000) {
-		rotorMoveAz = rotorMoveAz - 180;
-	}
-	else {
-		// adjust move if < -180 degrees
-		if (rotorMoveAz < -18000) {
-			rotorMoveAz = rotorMoveAz + 18000;
-		}
-	}
-
-	if (rotorMoveAz > 0) {
-		azRotorMovement = "  R ";
-		azRotorMovement = azRotorMovement + String(newAzimuth / 100);
-		digitalWrite(G5500LeftPin, LOW);
-		digitalWrite(G5500RightPin, HIGH);
-	}
-	else {
-		if (rotorMoveAz < 0) {
-			azRotorMovement = "  L ";
-			azRotorMovement = azRotorMovement + String(newAzimuth / 100);
-			digitalWrite(G5500RightPin, LOW);
-			digitalWrite(G5500LeftPin, HIGH);
-		}
-	}
-}
-
-//
-// read azimuth from G5500
-//
-//void readElevation() {
-//	//	long sensorValue = analogRead(elevationInputPin);
-//	long sensorValue = 0;
-//	rotorElevation = (sensorValue * 10000) / elScaleFactor;
-//}
-
-//
-// read azimuth from G5500
-//
-//
-// decode gs232 commands
-//
-void processAzElNumeric(char character) {
-	switch (gs232AzElIndex) {
-		case 0: // first azimuth character
-		{
-			azimuthTemp = (character - 48) * 100;
-			gs232AzElIndex++;
-			break;
-		}
-		case 1: {
-			azimuthTemp = azimuthTemp + (character - 48) * 10;
-			gs232AzElIndex++;
-			break;
-		}
-		case 2: // final azimuth character
-		{
-			azimuthTemp = azimuthTemp + (character - 48);
-			gs232AzElIndex++;
-
-			// check for valid azimuth
-			if ((azimuthTemp * 100) > maxRotorAzimuth) {
-				gs232WActive = false;
-				newAzimuth = 0L;
-				newElevation = 0L;
-			}
-			break;
-		}
-		case 3: // first elevation character
-		{
-			elevationTemp = (character - 48) * 100;
-			gs232AzElIndex++;
-			break;
-		}
-		case 4: {
-			elevationTemp = elevationTemp + (character - 48) * 10;
-			gs232AzElIndex++;
-			break;
-		}
-		case 5: // last elevation character
-		{
-			elevationTemp = elevationTemp + (character - 48);
-			gs232AzElIndex++;
-
-			// check for valid elevation
-			if ((elevationTemp * 100) > maxRotorElevation) {
-				gs232WActive = false;
-				newAzimuth = 0L;
-				newElevation = 0L;
-			}
-			else // both azimuth and elevation are ok
-			{
-				// set up for rotor move
-				newAzimuth = azimuthTemp * 100;
-				newElevation = elevationTemp * 100;
-				azimuthMove = true;
-				elevationMove = true;
-				client.println("Valid azimuth and elevation");
-			}
-			break;
-		}
-		default: {
-			// should never get here
-			break;
-		}
-	}
 }
 
 //void displayAz(long az) {
@@ -326,62 +128,8 @@ void printIpToAllUserOuts() {
 	client.println();
 }
 
-//void decodeCommand(char character) {
-//	switch (character) {
-//		// gs232 W command
-//		case 'w':
-//		case 'W': {
-//			client.println("W command started");
-//			gs232WActive = true;
-//			gs232AzElIndex = 0;
-//			break;
-//		}
-//			// numeric - azimuth and elevation digits
-//		case '0':
-//		case '1':
-//		case '2':
-//		case '3':
-//		case '4':
-//		case '5':
-//		case '6':
-//		case '7':
-//		case '8':
-//		case '9': {
-//			if (gs232WActive) {
-//				processAzElNumeric(character);
-//			}
-//			break;
-//		}
-//		case 'i': {
-//			printIpToAllUserOuts();
-//			break;
-//		}
-//		default: {
-//			// ignore everything else
-//			break;
-//		}
-//	}
-//}
-
-// process az el numeric characters from gs232 W command
-// display az el on display
-void displayAzEl(long az, long el) {
-	// display azimuth - filter A/D noise
-	if (abs(rotorAzimuth - previousRotorAzimuth) > 50) {
-		previousRotorAzimuth = rotorAzimuth;
-		//		displayAz(az);
-	}
-
-	// display elevation - filter A/D noise
-	if (abs(rotorElevation - previousRotorElevation) > 50) {
-		previousRotorElevation = rotorElevation;
-		//		displayEl(el);
-	}
-
-}
-
 void checkForCommand() {
-	client = server.available();
+	client = commandServer.available();
 
 	if (client) {
 		if (client.available() > 0) {
@@ -398,61 +146,119 @@ void checkForCommand() {
 	}
 }
 
-void stopAzimuthRotor() {
-	digitalWrite(G5500LeftPin, LOW);
-	digitalWrite(G5500RightPin, LOW);
-	azimuthMove = false;
-	//	azRotorMovement = "        ";
+bool azLabelSet = false;
+bool elLabelSet = false;
+bool curAzDisplayed = false;
+bool curElDisplayed = false;
+long lastCurrentAz = 0;
+long lastCurrentEl = 0;
+long lastTargetAz = 0;
+long lastTargetEl = 0;
+size_t azDoubleStrLength = 0;
+size_t elDoubleStrLength = 0;
+String azLabel = "Az:";
+String elLabel = "El:";
+String arrow = "->";
+
+void updateDisplay() {
+	if (rotorController.isRotatingAzimuth()) {
+		long curAz = rotorController.getCurrentAzimuth();
+		long targetAz = rotorController.getTargetAzimuth();
+		if (!azLabelSet) {
+			lcd.clear();
+			lcd.home();
+			lcd.print(azLabel);
+			azLabelSet = true;
+		}
+		if (curAz != lastCurrentAz || !curAzDisplayed) {
+			lcd.setCursor(azLabel.length() + 1, 0);
+			double curAzDouble = curAz / 100;
+			azDoubleStrLength = lcd.print(curAzDouble);
+			lastCurrentAz = curAz;
+			curAzDisplayed = true;
+		}
+		if (targetAz != lastTargetAz) {
+			lcd.print(arrow);
+			lcd.setCursor(azLabel.length() + arrow.length() + azDoubleStrLength + 1, 0);
+			double targetAzDouble = targetAz / 100;
+			lcd.print(targetAzDouble);
+			lastTargetAz = targetAz;
+		}
+	}
+	else {
+		lcd.home();
+		lcd.print("Azimuth ok");
+	}
+
+	if (rotorController.isRotatingElevation()) {
+		long curEl = rotorController.getCurrentElevation();
+		long targetEl = rotorController.getTargetElevation();
+		if (!elLabelSet) {
+			lcd.setCursor(0, 1);
+			lcd.print(elLabel);
+			elLabelSet = true;
+		}
+		if (curEl != lastCurrentEl || !curElDisplayed) {
+			lcd.setCursor(elLabel.length() + 1, 0);
+			double curElDouble = curEl / 100;
+			elDoubleStrLength = lcd.print(curElDouble);
+			lastCurrentEl = curEl;
+		}
+		if (targetEl != lastTargetEl) {
+			lcd.print(arrow);
+			lcd.setCursor(elLabel.length() + arrow.length() + elDoubleStrLength + 1, 0);
+			double targetElDouble = targetEl / 100;
+			lcd.print(targetElDouble);
+			lastCurrentEl = targetEl;
+		}
+	}
+	else {
+		lcd.setCursor(0, 1);
+		lcd.print("Elevation ok");
+	}
 }
 
-void stopElevationRotor() {
-	digitalWrite(G5500UpPin, LOW);
-	digitalWrite(G5500DownPin, LOW);
-	elevationMove = false;
-	//	elRotorMovement = "        ";
+union AzElUnion {
+		unsigned long position;
+		uint8_t bytes[4];
+};
+
+/**
+ *
+ */
+bubo::TelemetryPayload createAzPayload(long az) {
+//	Serial.println(az, DEC);
+	// Create 4 byte array.
+	byte* const bytes = (byte*) malloc(sizeof(long));
+	if (bytes != NULL) {
+		bytes[0] = az;
+		bytes[1] = az >> 8;
+		bytes[2] = az >> 16;
+		bytes[3] = az >> 24;
+	}
+	else {
+		Serial.println("Failed to allocate 4 bytes for TM");
+	}
+
+	return bubo::TelemetryPayload(bytes, 4);
 }
 
-//void rotorAllStop() {
-//	// set all the rotor control outputs low
-//	digitalWrite(G5500UpPin, LOW);
-//	digitalWrite(G5500DownPin, LOW);
-//	digitalWrite(G5500LeftPin, LOW);
-//	digitalWrite(G5500RightPin, LOW);
-//}
-
-//void rotate(unsigned long& elapsedTime) {
-//	// reset rotor move timer base
-//	rtcLastRotorUpdate = elapsedTime;
-//
-//	if (azimuthMove || elevationMove) {
-//		lcd.clear();
-//		lcd.print("Rotating:");
-//		lcd.setCursor(0, 1);
-//		// AZIMUTH
-//		// get current azimuth from G-5500
-//		readAzimuth();
-//		// see if azimuth move is required
-//		if ((abs(rotorAzimuth - newAzimuth) > closeEnough)) {
-//			updateAzimuthMove();
-//			lcd.print("Az->" + (String) newAzimuth);
-//		}
-//		else {
-//			stopAzimuthRotor();
-//		}
-//
-//		// ELEVATION
-//		// get current elevation from G-5500
-//		readElevation();
-//		// see if an elevation move is required
-//		if (abs(rotorElevation - newElevation) > closeEnough) {
-//			updateElevationMove();
-//			lcd.print("El->" + (String) newElevation);
-//		}
-//		else {
-//			stopElevationRotor();
-//		}
-//	}
-//}
+/**
+ *
+ */
+long previousAzValue = -999;
+void outputTelemetry() {
+	long az = rotorController.getCurrentAzimuth();
+	if (previousAzValue != az) {
+		bubo::TelemetryPayload azTmPayload = createAzPayload(az);
+//		Serial.println("Payload binary out:");
+//		Serial.write(azTmPayload.getPayload(), azTmPayload.getSize());
+//		Serial.println();
+//		Serial.println("-------------------");
+		tmServer.write(azTmPayload.getPayload(), azTmPayload.getSize());
+		previousAzValue = az;
+	}
+}
 
 /**
  * MAIN EVENT LOOP
@@ -481,6 +287,10 @@ void loop() {
 		// update rtcLast
 		rtcLastDisplayUpdate = elapsedTime;
 	}
+
+	outputTelemetry();
+
+	updateDisplay();
 }
 
 /**
@@ -497,12 +307,13 @@ bool setupEthernetServer() {
 		return false;
 	}
 
-	server.begin();
+	commandServer.begin();
+	tmServer.begin();
 
 	// print local IP address to LCD screen.
 	// TODO change from serial to LCD screen print.
 	Serial.print("My IP address: ");
-
+	Serial.println(ipToString());
 	Serial.println();
 
 	return true;
@@ -517,30 +328,14 @@ void setup() {
 	delay(100);
 	lcd.print("Bubo booting...");
 
-	// initialise rotor control pins as outputs
-//	pinMode(G5500UpPin, OUTPUT);
-//	pinMode(G5500DownPin, OUTPUT);
-//	pinMode(G5500LeftPin, OUTPUT);
-//	pinMode(G5500RightPin, OUTPUT);
-
-	// set all the rotor control outputs low
-//	digitalWrite(G5500UpPin, LOW);
-//	digitalWrite(G5500DownPin, LOW);
-//	digitalWrite(G5500LeftPin, LOW);
-//	digitalWrite(G5500RightPin, LOW);
-
-	// initialise serial ports:
-	Serial.begin(9600); // control
-
-	// set up rotor lcd display values
-//	readAzimuth(); // get current azimuth from G-5500
-	previousRotorAzimuth = rotorAzimuth + 1000;
-//	readElevation(); // get current elevation from G-5500
-	previousRotorElevation = rotorElevation + 1000;
+	// initialise serial port:
+	Serial.begin(9600);
 
 	if (!setupEthernetServer()) {
 		error = true;
 	}
+
+	commandProcessor.addCommandListener(&rotorController);
 
 	if (!error) {
 		lcd.clear();
@@ -549,5 +344,6 @@ void setup() {
 		lcd.setCursor(0, 1);
 		lcd.print(ipToString());
 	}
+
 }
 
