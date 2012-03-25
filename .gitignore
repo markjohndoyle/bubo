@@ -4,3 +4,5 @@
 arduinolib/libArduinoCore.a
 ATMega/
 MEGA2560
+.settings/de.innot.avreclipse.core.prefs
+.cproject
