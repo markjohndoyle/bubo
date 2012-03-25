@@ -6,6 +6,7 @@
  */
 #include "bubo/CommandProcessor.hpp"
 #include "bubo/Command.hpp"
+#include "Arduino.h"
 
 using namespace bubo;
 
@@ -51,8 +52,8 @@ void CommandProcessor::decodeCommand(char inChar) {
 
 void CommandProcessor::processAzElNumeric(char character) {
 	switch (wCmdCurrentBytePosition) {
-		case 0: // first azimuth character
-		{
+		// first azimuth character
+		case 0: {
 			wCmdAzArg = (character - 48) * 100;
 			wCmdCurrentBytePosition++;
 			break;
@@ -62,21 +63,14 @@ void CommandProcessor::processAzElNumeric(char character) {
 			wCmdCurrentBytePosition++;
 			break;
 		}
-		case 2: // final azimuth character
-		{
+			// final azimuth character
+		case 2: {
 			wCmdAzArg = wCmdAzArg + (character - 48);
 			wCmdCurrentBytePosition++;
-
-//			// check for valid azimuth
-//			if ((wCmdAzArg * 100) > maxRotorAzimuth) {
-//				gs232WActive = false;
-//				newAzimuth = 0L;
-//				newElevation = 0L;
-//			}
 			break;
 		}
-		case 3: // first elevation character
-		{
+			// first elevation character
+		case 3: {
 			wCmdElArg = (character - 48) * 100;
 			wCmdCurrentBytePosition++;
 			break;
@@ -86,26 +80,16 @@ void CommandProcessor::processAzElNumeric(char character) {
 			wCmdCurrentBytePosition++;
 			break;
 		}
-		case 5: // last elevation character
-		{
+			// last elevation character
+		case 5: {
 			wCmdElArg = wCmdElArg + (character - 48);
 			wCmdCurrentBytePosition++;
-//
-//			// check for valid elevation
-//			if ((wCmdElArg * 100) > maxRotorElevation) {
-//				wCmdActive = false;
-//				wCmdAzArg = 0L;
-//				wCmdElArg = 0L;
-//			}
-//			else // both azimuth and elevation are ok
-//			{
-				// set up for rotor move
-//				azimuthMove = true;
-//				elevationMove = true;
-				wCmdAzArg = wCmdAzArg * 100;
-				wCmdElArg = wCmdElArg * 100;
+			wCmdAzArg = wCmdAzArg * 100;
+			wCmdElArg = wCmdElArg * 100;
+			Serial.println("Valid command assembled");
+			if (cmdListener != 0) {
 				this->cmdListener->acceptCommand(Command(Command::W, wCmdAzArg, wCmdElArg));
-//			}
+			}
 			break;
 		}
 		default: {
