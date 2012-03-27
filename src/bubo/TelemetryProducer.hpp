@@ -9,17 +9,20 @@
 #define TELEMETRYPRODUCER_HPP_
 
 #include "bubo/TelemetryPayload.hpp"
+#include "bubo/RotorInterface.hpp"
 
 namespace bubo {
 
-class TelemetryProducer {
+class RotorTelemetryProducer {
 	public:
-		TelemetryProducer();
+		enum TM_TYPE {AZIMUTH, ELEVATION};
 
-		TelemetryPayload produceTelemetry(long value);
+		RotorTelemetryProducer(RotorInterface* rotorInterface);
+
+		TelemetryPayload produceTelemetry(TM_TYPE type);
 
 	private:
-		bool deltasOnly;
+		RotorInterface* rotor;
 };
 
 }

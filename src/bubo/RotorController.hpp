@@ -10,6 +10,7 @@
 
 #include "Arduino.h"
 #include "bubo/CommandListener.hpp"
+#include "bubo/RotorInterface.hpp"
 
 namespace bubo {
 
@@ -18,10 +19,9 @@ namespace bubo {
  * AZ or az = Azimuth
  * EL or el = Elevation
  */
-class RotorController : public CommandListener {
+class RotorController : public CommandListener, public RotorInterface {
 	public:
 		RotorController();
-		~RotorController() {};
 
 		void rotate();
 

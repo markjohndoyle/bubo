@@ -11,6 +11,7 @@
 #include "bubo/RotorController.hpp"
 #include "bubo/CommandProcessor.hpp"
 #include "bubo/TelemetryPayload.hpp"
+#include "bubo/TelemetryProducer.hpp"
 
 static byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0x8E, 0x5B };
 
@@ -47,6 +48,7 @@ String elRotorMovement; // string for el rotor move display
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // set the LCD address to 0x20 for a 16 chars and 2 line display
 bubo::CommandProcessor commandProcessor;
 bubo::RotorController rotorController;
+bubo::RotorTelemetryProducer tmProducer(&rotorController);
 
 /**
  * Returns a String of Bubo's IP address.
@@ -60,72 +62,6 @@ String ipToString() {
 		ipStr += ".";
 	}
 	return ipStr;
-}
-
-//void displayAz(long az) {
-//	// clear azimuth line
-//	lcdSerial.print(line0, BYTE);
-//	lcdSerial.print("                ");
-//
-//	//  adjust value for display
-//	double azFloat = az;
-//	azFloat = azFloat / 100.0;
-//
-//	// position lcd cursor on top line
-//	lcdSerial.print(line0, BYTE);
-//
-//	// display azimuth
-//	lcdSerial.print("AZ ");
-//	// pad with spaces
-//	if (azFloat < 10.0) {
-//		lcdSerial.print(" ");
-//	}
-//	if (azFloat < 100.0) {
-//		lcdSerial.print(" ");
-//	}
-//	lcdSerial.print(azFloat, 1);
-//	lcdSerial.print(azRotorMovement);
-//}
-
-//void displayEl(long el) {
-//	// clear elevation line  lcdSerial
-//	lcdSerial.print(line1, BYTE);
-//	lcdSerial.print("                ");
-//
-//	//  adjust value for display
-//	double elFloat = el;
-//	elFloat = elFloat / 100.0;
-//
-//	// position lcd cursor on bottom line
-//	lcdSerial.print(line1, BYTE);
-//
-//	// display elevation
-//	lcdSerial.print("EL ");
-//	// pad with spaces
-//	if (elFloat < 10.0) {
-//		lcdSerial.print(" ");
-//	}
-//	if (elFloat < 100.0) {
-//		lcdSerial.print(" ");
-//	}
-//	lcdSerial.print(elFloat, 1);
-//	lcdSerial.print(elRotorMovement);
-//}
-
-void printIpToAllUserOuts() {
-	String ip = ipToString();
-	// to LCD Display
-	lcd.clear();
-	lcd.print("IP address:");
-	lcd.setCursor(0, 1);
-	lcd.print(ip);
-
-	Serial.print("IP address:");
-	Serial.println(ip);
-
-	client.print("IP address:");
-	client.println(ip);
-	client.println();
 }
 
 void checkForCommand() {
@@ -160,6 +96,7 @@ String azLabel = "Az:";
 String elLabel = "El:";
 String arrow = "->";
 
+// FIXME Move to class.
 void updateDisplay() {
 	if (rotorController.isRotatingAzimuth()) {
 		long curAz = rotorController.getCurrentAzimuth();
@@ -218,46 +155,24 @@ void updateDisplay() {
 	}
 }
 
-union AzElUnion {
-		unsigned long position;
-		uint8_t bytes[4];
-};
-
-/**
- *
- */
-bubo::TelemetryPayload createAzPayload(long az) {
-//	Serial.println(az, DEC);
-	// Create 4 byte array.
-	byte* const bytes = (byte*) malloc(sizeof(long));
-	if (bytes != NULL) {
-		bytes[0] = az;
-		bytes[1] = az >> 8;
-		bytes[2] = az >> 16;
-		bytes[3] = az >> 24;
-	}
-	else {
-		Serial.println("Failed to allocate 4 bytes for TM");
-	}
-
-	return bubo::TelemetryPayload(bytes, 4);
-}
-
-/**
- *
- */
-long previousAzValue = -999;
+long previousAz = -99999;
 void outputTelemetry() {
+	// TODO nasty get azimuth from rotor for check; azimuth is also gathered by tm producer.
 	long az = rotorController.getCurrentAzimuth();
-	if (previousAzValue != az) {
-		bubo::TelemetryPayload azTmPayload = createAzPayload(az);
-//		Serial.println("Payload binary out:");
-//		Serial.write(azTmPayload.getPayload(), azTmPayload.getSize());
-//		Serial.println();
-//		Serial.println("-------------------");
+	if (az != previousAz) {
+		bubo::TelemetryPayload azTmPayload = tmProducer.produceTelemetry(bubo::RotorTelemetryProducer::AZIMUTH);
 		tmServer.write(azTmPayload.getPayload(), azTmPayload.getSize());
-		previousAzValue = az;
+		previousAz = az;
 	}
+
+	// TODO nasty get elevation from rotor for check; elevation is also gathered by tm producer.
+	long el = rotorController.getCurrentElevation();
+	if (el != previousAz) {
+		bubo::TelemetryPayload elTmPayload = tmProducer.produceTelemetry(bubo::RotorTelemetryProducer::ELEVATION);
+		tmServer.write(elTmPayload.getPayload(), elTmPayload.getSize());
+		previousAz = az;
+	}
+
 }
 
 /**
@@ -324,7 +239,7 @@ void setup() {
 
 	lcd.init();
 	lcd.backlight();
-	lcd.clear();
+//	lcd.clear();
 	delay(100);
 	lcd.print("Bubo booting...");
 
