@@ -15,7 +15,7 @@ namespace bubo {
 
 class RotorTelemetryProducer {
 	public:
-		enum TM_TYPE {AZIMUTH, ELEVATION};
+		enum TM_TYPE { AZIMUTH, ELEVATION };
 
 		RotorTelemetryProducer(RotorInterface* rotorInterface);
 

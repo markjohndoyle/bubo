@@ -14,7 +14,7 @@ RotorTelemetryProducer::RotorTelemetryProducer(RotorInterface* rotorInterface) :
 }
 
 TelemetryPayload RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
-	long value;
+	long value = -9999;
 	switch(type) {
 		case AZIMUTH:
 			value = rotor->getCurrentAzimuth();
@@ -24,7 +24,7 @@ TelemetryPayload RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
 			break;
 	}
 
-	htonl(value);
+	value = htonl(value);
 
 	// Create 4 byte array.
 	byte* const bytes = (byte*) malloc(sizeof(long));
