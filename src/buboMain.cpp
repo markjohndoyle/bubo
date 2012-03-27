@@ -86,8 +86,8 @@ bool azLabelSet = false;
 bool elLabelSet = false;
 bool curAzDisplayed = false;
 bool curElDisplayed = false;
-long lastCurrentAz = 0;
-long lastCurrentEl = 0;
+long lastCurrentAz = -999;
+long lastCurrentEl = -999;
 long lastTargetAz = 0;
 long lastTargetEl = 0;
 size_t azDoubleStrLength = 0;
@@ -95,6 +95,8 @@ size_t elDoubleStrLength = 0;
 String azLabel = "Az:";
 String elLabel = "El:";
 String arrow = "->";
+int curAzCharLength = 0;
+int curElCharLength = 0;
 
 // FIXME Move to class.
 void updateDisplay() {
@@ -107,16 +109,19 @@ void updateDisplay() {
 			lcd.print(azLabel);
 			azLabelSet = true;
 		}
-		if (curAz != lastCurrentAz || !curAzDisplayed) {
+		if (curAz != lastCurrentAz) {
 			lcd.setCursor(azLabel.length() + 1, 0);
-			double curAzDouble = curAz / 100;
-			azDoubleStrLength = lcd.print(curAzDouble);
+			int curAzDouble = curAz / 100;
+			curAzCharLength = curAzDouble / 10 + 1;
+			lcd.print(curAzDouble);
+			Serial.println(curAzDouble);
+			Serial.println(azDoubleStrLength);
 			lastCurrentAz = curAz;
 			curAzDisplayed = true;
 		}
 		if (targetAz != lastTargetAz) {
+			lcd.setCursor(azLabel.length() + curAzCharLength + 1, 0);
 			lcd.print(arrow);
-			lcd.setCursor(azLabel.length() + arrow.length() + azDoubleStrLength + 1, 0);
 			double targetAzDouble = targetAz / 100;
 			lcd.print(targetAzDouble);
 			lastTargetAz = targetAz;
@@ -124,6 +129,12 @@ void updateDisplay() {
 	}
 	else {
 		lcd.home();
+		if(azLabelSet) {
+			lcd.print("                ");
+			lcd.setCursor(0, 0);
+			azLabelSet = false;
+			lastCurrentAz = -9999;
+		}
 		lcd.print("Azimuth ok");
 	}
 
@@ -135,15 +146,16 @@ void updateDisplay() {
 			lcd.print(elLabel);
 			elLabelSet = true;
 		}
-		if (curEl != lastCurrentEl || !curElDisplayed) {
-			lcd.setCursor(elLabel.length() + 1, 0);
-			double curElDouble = curEl / 100;
-			elDoubleStrLength = lcd.print(curElDouble);
+		if (curEl != lastCurrentEl) {
+			lcd.setCursor(elLabel.length() + 1, 1);
+			int curElDouble = curEl / 100;
+			curElCharLength = curElDouble / 10 + 1;
+			lcd.print(curElDouble);
 			lastCurrentEl = curEl;
 		}
 		if (targetEl != lastTargetEl) {
+			lcd.setCursor(elLabel.length() + curAzCharLength + 1, 1);
 			lcd.print(arrow);
-			lcd.setCursor(elLabel.length() + arrow.length() + elDoubleStrLength + 1, 0);
 			double targetElDouble = targetEl / 100;
 			lcd.print(targetElDouble);
 			lastCurrentEl = targetEl;
@@ -151,6 +163,12 @@ void updateDisplay() {
 	}
 	else {
 		lcd.setCursor(0, 1);
+		if(elLabelSet) {
+			lcd.print("                ");
+			lcd.setCursor(0, 1);
+			elLabelSet = false;
+			lastCurrentEl = -9999;
+		}
 		lcd.print("Elevation ok");
 	}
 }
