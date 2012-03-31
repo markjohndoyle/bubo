@@ -14,7 +14,7 @@ RotorTelemetryProducer::RotorTelemetryProducer(RotorInterface* rotorInterface) :
 }
 
 TelemetryPayload RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
-	long value = -999;
+	long value = -9999;
 	switch(type) {
 		case AZIMUTH:
 			value = rotor->getCurrentAzimuth();
