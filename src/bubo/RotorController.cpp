@@ -160,18 +160,17 @@ void RotorController::allStop() {
 	digitalWrite(PIN_EL_DOWN, LOW);
 	digitalWrite(PIN_AZ_LEFT, LOW);
 	digitalWrite(PIN_AZ_RIGHT, LOW);
+	rotatingAzimuth = false;
+	rotatingElevation = false;
 }
 
 void RotorController::updateAzimuth() {
 	long sensorValue = analogRead(PIN_AZ_INPUT);
-//	currentAzimuth = ((sensorValue * 10000) / AZ_SCALE_FACTOR) - azimuthaAdZeroOffset;
-	currentAzimuth = ((sensorValue * 10000) / AZ_SCALE_FACTOR);
-	currentAzimuth = 0;
+	currentAzimuth = ((sensorValue * 10000) / AZ_SCALE_FACTOR) - azimuthaAdZeroOffset;
 }
 
 void RotorController::updateElevation() {
 	long sensorValue = analogRead(PIN_EL_INPUT);
-	currentElevation = (sensorValue * 10000) / EL_SCALE_FACTOR;
-	currentElevation = 0;
+	currentElevation = (sensorValue * 10000) / EL_SCALE_FACTOR - elevationAdZeroOffset;
 }
 

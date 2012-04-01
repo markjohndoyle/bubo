@@ -23,6 +23,9 @@ class RotorTelemetryProducer {
 
 	private:
 		RotorInterface* rotor;
+
+		static const uint8_t AZIMUTH_ID;
+		static const uint8_t ELEVATION_ID;
 };
 
 }

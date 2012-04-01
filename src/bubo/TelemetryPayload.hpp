@@ -14,8 +14,8 @@ namespace bubo {
 
 class TelemetryPayload {
 	public:
-		TelemetryPayload(byte* newPayload, size_t newPayloadSize) :
-				payload(newPayload), size(newPayloadSize) {
+		TelemetryPayload(byte* newPayload, size_t newPayloadSize, uint8_t payloadId) :
+				payload(newPayload), size(newPayloadSize), id(payloadId) {
 		}
 
 		~TelemetryPayload() {
@@ -35,6 +35,7 @@ class TelemetryPayload {
 	private:
 		byte* payload;
 		size_t size;
+		uint8_t id;
 };
 }
 

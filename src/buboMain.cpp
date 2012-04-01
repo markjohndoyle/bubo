@@ -1,7 +1,6 @@
 /**
  * Bubo - Yaesu ethernet rotor computer control interface
  *
- * Based upon work by Tom Doyle
  */
 #include "Arduino.h"
 #include <stdlib.h>
@@ -13,6 +12,7 @@
 #include "bubo/TelemetryPayload.hpp"
 #include "bubo/TelemetryProducer.hpp"
 
+/** MAC address for the Ethernet shield */
 static byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0x8E, 0x5B };
 
 /** The Ethernet Server that listens for commands */
