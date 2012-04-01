@@ -2,7 +2,7 @@
  * Command.hpp
  *
  *  Created on: Mar 22, 2012
- *      Author: mark
+ *      Author: Mark Doyle
  */
 
 #ifndef COMMAND_HPP_

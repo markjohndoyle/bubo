@@ -19,9 +19,10 @@ namespace bubo {
  * AZ or az = Azimuth
  * EL or el = Elevation
  */
-class RotorController : public CommandListener, public RotorInterface {
+class RotorController: public CommandListener, public RotorInterface {
 	public:
 		RotorController();
+		~RotorController();
 
 		void rotate();
 
@@ -50,19 +51,19 @@ class RotorController : public CommandListener, public RotorInterface {
 		}
 
 		long getAzimuthaAdZeroOffset() const {
-			return this->azimuthaAdZeroOffset;
+			return this->config.azimuthaAdZeroOffset;
 		}
 
 		void setAzimuthaAdZeroOffset(long newOffset) {
-			this->azimuthaAdZeroOffset = newOffset;
+			this->config.azimuthaAdZeroOffset = newOffset;
 		}
 
 		long getElevationAdZeroOffset() const {
-			return this->elevationAdZeroOffset;
+			return this->config.elevationAdZeroOffset;
 		}
 
 		void setElevationAdZeroOffset(long newOffset) {
-			this->elevationAdZeroOffset = newOffset;
+			this->config.elevationAdZeroOffset = newOffset;
 		}
 
 		bool isRotatingAzimuth() const {
@@ -73,7 +74,14 @@ class RotorController : public CommandListener, public RotorInterface {
 			return this->rotatingElevation;
 		}
 
+		int saveConfig() const;
+
+		int loadConfig();
+
 	private:
+		/** The start address in EEPROM of the rotorconfiguration */
+		static const int CONFIG_EEPROM_ADDRESS;
+
 		/**
 		 * 10 bit A/D converters in the Arduino have a max value of 1023
 		 * for the azimuth the A/D value of 1023 should correspond to 450 degrees
@@ -84,20 +92,6 @@ class RotorController : public CommandListener, public RotorInterface {
 		 */
 		static const long AZ_SCALE_FACTOR;
 		static const long EL_SCALE_FACTOR;
-
-		/**
-		 * A/D converter parameters
-		 * AFTER you have adjusted your G-5500 control box as per the manual
-		 * adjust the next 4 parameters. The settings interact a bit so you may have
-		 * to go back and forth a few times. Remember the G-5500 rotors are not all that
-		 * accurate (within 4 degrees at best) so try not to get too compulsive when
-		 * making these adjustments.
-		 *
-		 */
-		/** adjust to zero out lcd az reading when control box az = 0 */
-		long azimuthaAdZeroOffset;
-		/** adjust to zero out lcd el reading when control box el = 0 */
-		long elevationAdZeroOffset;
 
 		/** elevation rotor up control line */
 		static const byte PIN_EL_UP;
@@ -123,13 +117,6 @@ class RotorController : public CommandListener, public RotorInterface {
 		/** Current elevation as received by the rotor on PIN_AZIMUTH */
 		long currentAzimuth;
 
-		/**
-		 * Tolerance for az-el match in rotor move in degrees * 100
-		 * take care if you lower this value -  wear or dirt on the pots in your rotors
-		 * or A/D converter jitter may cause hunting if the value is too low.
-		 */
-		long bias;
-
 		unsigned long rotorMoveUpdateInterval;
 
 		bool rotatingAzimuth;
@@ -149,7 +136,30 @@ class RotorController : public CommandListener, public RotorInterface {
 		bool isCommandValid(Command cmd);
 
 		void rotateAzimuth();
+
 		void rotateElevation();
+
+		struct rotorConfig {
+			/**
+			 * A/D converter parameters
+			 * AFTER you have adjusted your G-5500 control box as per the manual
+			 * adjust the next 4 parameters. The settings interact a bit so you may have
+			 * to go back and forth a few times. Remember the G-5500 rotors are not all that
+			 * accurate (within 4 degrees at best) so try not to get too compulsive when
+			 * making these adjustments.
+			 */
+			/** adjust to zero out lcd az reading when control box az = 0 */
+			long azimuthaAdZeroOffset;
+			/** adjust to zero out lcd el reading when control box el = 0 */
+			long elevationAdZeroOffset;
+
+			/**
+			 * Tolerance for az-el match in rotor move in degrees * 100
+			 * take care if you lower this value -  wear or dirt on the pots in your rotors
+			 * or A/D converter jitter may cause hunting if the value is too low.
+			 */
+			long bias;
+		} config;
 };
 
 }
