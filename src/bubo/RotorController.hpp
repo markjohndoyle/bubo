@@ -67,7 +67,7 @@ class RotorController: public CommandListener, public RotorInterface {
 		}
 
 		bool isRotatingAzimuth() const {
-			return this->rotatingElevation;
+			return this->rotatingAzimuth;
 		}
 
 		bool isRotatingElevation() const {

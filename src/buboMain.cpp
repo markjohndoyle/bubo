@@ -84,12 +84,10 @@ void checkForCommand() {
 
 bool azLabelSet = false;
 bool elLabelSet = false;
-bool curAzDisplayed = false;
-bool curElDisplayed = false;
 long lastCurrentAz = -999;
 long lastCurrentEl = -999;
-long lastTargetAz = 0;
-long lastTargetEl = 0;
+long lastTargetAz = -999;
+long lastTargetEl = -999;
 size_t azDoubleStrLength = 0;
 size_t elDoubleStrLength = 0;
 String azLabel = "Az:";
@@ -114,10 +112,7 @@ void updateDisplay() {
 			int curAzDouble = curAz / 100;
 			curAzCharLength = curAzDouble / 10 + 1;
 			lcd.print(curAzDouble);
-			Serial.println(curAzDouble);
-			Serial.println(azDoubleStrLength);
 			lastCurrentAz = curAz;
-			curAzDisplayed = true;
 		}
 		if (targetAz != lastTargetAz) {
 			lcd.setCursor(azLabel.length() + curAzCharLength + 1, 0);
@@ -267,6 +262,8 @@ void setup() {
 	if (!setupEthernetServer()) {
 		error = true;
 	}
+
+	rotorController = bubo::RotorController();
 
 	commandProcessor.addCommandListener(&rotorController);
 
