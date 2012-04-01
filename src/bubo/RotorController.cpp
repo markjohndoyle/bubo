@@ -5,8 +5,11 @@
  *      Author: Mark Doyle
  */
 #include "bubo/RotorController.hpp"
+#include "utilEeprom/EEPROManything.hpp"
 
 using namespace bubo;
+
+const int RotorController::CONFIG_EEPROM_ADDRESS = 0;
 
 const uint8_t RotorController::PIN_EL_UP = 4;
 const uint8_t RotorController::PIN_EL_DOWN = 5;
@@ -22,9 +25,12 @@ const long RotorController::EL_SCALE_FACTOR = 568;
 const byte RotorController::PIN_AZ_INPUT = A14;
 const byte RotorController::PIN_EL_INPUT = A15;
 
-RotorController::RotorController() :
-		azimuthaAdZeroOffset(325), elevationAdZeroOffset(0), bias(100), rotorMoveUpdateInterval(100UL), rotatingAzimuth(
+RotorController::RotorController() : rotorMoveUpdateInterval(100UL), rotatingAzimuth(
 				false), rotatingElevation(false) {
+
+	config.azimuthaAdZeroOffset = 325;
+	config.elevationAdZeroOffset = 0;
+	config.bias = 1;
 
 	pinMode(PIN_EL_UP, OUTPUT);
 	pinMode(PIN_EL_DOWN, OUTPUT);
@@ -38,6 +44,9 @@ RotorController::RotorController() :
 	targetAzimuth = currentAzimuth;
 	updateElevation();
 	targetElevation = currentElevation;
+}
+
+RotorController::~RotorController() {
 }
 
 unsigned long RotorController::getRotorMoveUpdateInterval() const {
@@ -54,7 +63,7 @@ void RotorController::rotate() {
 	// get current azimuth from G-5500
 	updateAzimuth();
 	// see if azimuth move is required
-	if ((abs(currentAzimuth - targetAzimuth) > bias)) {
+	if ((abs(currentAzimuth - targetAzimuth) > config.bias)) {
 //			updateAzimuthMove();
 		rotateAzimuth();
 	}
@@ -66,7 +75,7 @@ void RotorController::rotate() {
 	// get current elevation from G-5500
 	updateElevation();
 	// see if an elevation move is required
-	if (abs(currentElevation - targetElevation) > bias) {
+	if (abs(currentElevation - targetElevation) > config.bias) {
 //			updateElevationMove();
 		rotateElevation();
 	}
@@ -174,3 +183,12 @@ void RotorController::updateElevation() {
 	currentElevation = (sensorValue * 10000) / EL_SCALE_FACTOR - elevationAdZeroOffset;
 }
 
+int RotorController::saveConfig() const {
+	// write config to eeprom
+	return EEPROM_writeAnything(CONFIG_EEPROM_ADDRESS, config);
+}
+
+int RotorController::loadConfig() {
+	// read config from eeprom and overwrite current config
+	return EEPROM_readAnything(CONFIG_EEPROM_ADDRESS, config);
+}

@@ -13,6 +13,8 @@ namespace bubo {
 
 class RotorInterface {
 	public:
+		virtual ~RotorInterface() {};
+
 		virtual long getCurrentAzimuth() const = 0;
 		virtual long getCurrentElevation() const = 0;
 };
