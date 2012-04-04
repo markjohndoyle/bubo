@@ -2,7 +2,7 @@
  * CommandListener.hpp
  *
  *  Created on: Mar 22, 2012
- *      Author: mark
+ *      Author: Mark Doyle
  */
 
 #ifndef COMMANDLISTENER_HPP_

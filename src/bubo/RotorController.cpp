@@ -9,29 +9,44 @@
 
 using namespace bubo;
 
-const int RotorController::CONFIG_EEPROM_ADDRESS = 0;
+/** Base address in EEPROM to determine if a config exists at address CONFIG_EEPROM_ADDRESS */
+const int RotorController::CONFIG_STORED_FLAG = 0x01;
+
+/** Base address in EEPROM to read or write the rotor config */
+const int RotorController::CONFIG_EEPROM_ADDRESS = 0x01;
 
 const uint8_t RotorController::PIN_EL_UP = 8;
 const uint8_t RotorController::PIN_EL_DOWN = 9;
 const uint8_t RotorController::PIN_AZ_LEFT = 6;
 const uint8_t RotorController::PIN_AZ_RIGHT = 5;
+const uint8_t RotorController::PIN_AZ_INPUT = A2;
+const uint8_t RotorController::PIN_EL_INPUT = A3;
 
 const long RotorController::MAX_AZIMUTH = 45000L;
 const long RotorController::MAX_ELEVATION = 18000L;
 
+/**
+ * Coefficient used to convert the analogue azimuth voltage into a degrees based upon the
+ * Arduino's 10-bit ADC and the Rotor's maximum azimuth range.
+ */
 const long RotorController::AZ_SCALE_FACTOR = 227;
+
+/**
+ * Coefficient used to convert the analogue elevation voltage into a degrees based upon the
+ * Arduino's 10-bit ADC and the Rotor's maximum elevation range.
+ */
 const long RotorController::EL_SCALE_FACTOR = 568;
 
-const byte RotorController::PIN_AZ_INPUT = A2;
-const byte RotorController::PIN_EL_INPUT = A3;
 
 RotorController::RotorController() : rotorMoveUpdateInterval(100UL), rotatingAzimuth(
 				false), rotatingElevation(false) {
 
+	// Rotor config defaults
 	config.azimuthaAdZeroOffset = 0;
 	config.elevationAdZeroOffset = 0;
-	config.bias = 200;
+	config.bias = 100;
 
+	// Initialise digital pins for output.
 	pinMode(PIN_EL_UP, OUTPUT);
 	pinMode(PIN_EL_DOWN, OUTPUT);
 	pinMode(PIN_AZ_LEFT, OUTPUT);
@@ -42,10 +57,8 @@ RotorController::RotorController() : rotorMoveUpdateInterval(100UL), rotatingAzi
 	// Get current position and set target to same value to prevent unnecessary rotation on startup.
 	updateAzimuth();
 	targetAzimuth = currentAzimuth;
-	Serial.println(targetAzimuth);
 	updateElevation();
 	targetElevation = currentElevation;
-	Serial.println(targetElevation);
 }
 
 RotorController::~RotorController() {
@@ -60,7 +73,6 @@ void RotorController::setRotorMoveUpdateInterval(unsigned long rotorMoveUpdateIn
 }
 
 void RotorController::rotate() {
-//	if (azimuthMove || elevationMove) {
 	// AZIMUTH
 	// get current azimuth from G-5500
 	updateAzimuth();
@@ -84,10 +96,6 @@ void RotorController::rotate() {
 	else {
 		stopElevationRotor();
 	}
-//	}
-//	else {
-//		allStop();
-//	}
 }
 
 void RotorController::rotateAzimuth() {
@@ -107,18 +115,12 @@ void RotorController::rotateAzimuth() {
 
 	if (azDelta > 0) {
 		rotatingAzimuth = true;
-		Serial.print("AZ: ");Serial.println(currentAzimuth);
-		Serial.print("TG: ");Serial.println(targetAzimuth);
-		Serial.print("DL: ");Serial.println(azDelta);
 		digitalWrite(PIN_AZ_LEFT, LOW);
 		digitalWrite(PIN_AZ_RIGHT, HIGH);
 	}
 	else {
 		if (azDelta < 0) {
 			rotatingAzimuth = true;
-			Serial.print("AZ: ");Serial.println(currentAzimuth);
-			Serial.print("TG: ");Serial.println(targetAzimuth);
-			Serial.print("DL: ");Serial.println(azDelta);
 			digitalWrite(PIN_AZ_RIGHT, LOW);
 			digitalWrite(PIN_AZ_LEFT, HIGH);
 		}

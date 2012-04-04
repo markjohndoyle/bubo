@@ -1,12 +1,12 @@
 /*
- * TelemetryProducer.hpp
+ * RotorTelemetryProducer.hpp
  *
  *  Created on: 25 Mar 2012
  *      Author: Mark Doyle
  */
 
-#ifndef TELEMETRYPRODUCER_HPP_
-#define TELEMETRYPRODUCER_HPP_
+#ifndef ROTORTELEMETRYPRODUCER_HPP_
+#define ROTORTELEMETRYPRODUCER_HPP_
 
 #include "bubo/TelemetryPayload.hpp"
 #include "bubo/RotorInterface.hpp"
@@ -15,7 +15,7 @@ namespace bubo {
 
 class RotorTelemetryProducer {
 	public:
-		enum TM_TYPE { AZIMUTH, ELEVATION };
+		enum TM_TYPE { POSITION };
 
 		RotorTelemetryProducer(RotorInterface* rotorInterface);
 
@@ -24,10 +24,9 @@ class RotorTelemetryProducer {
 	private:
 		RotorInterface* rotor;
 
-		static const uint8_t AZIMUTH_ID;
-		static const uint8_t ELEVATION_ID;
+		static const uint8_t LAYOUT_ID_POSITION;
 };
 
 }
 
-#endif /* TELEMETRYPRODUCER_HPP_ */
+#endif /* ROTORTELEMETRYPRODUCER_HPP_ */

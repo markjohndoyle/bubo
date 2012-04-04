@@ -15,11 +15,11 @@ namespace bubo {
 class TelemetryPayload {
 	public:
 		TelemetryPayload(byte* newPayload, size_t newPayloadSize, uint8_t payloadId) :
-				payload(newPayload), size(newPayloadSize), id(payloadId) {
+				payload(newPayload), size(newPayloadSize) {
 		}
 
 		~TelemetryPayload() {
-			if(payload != 0) {
+			if (payload != 0) {
 				free(payload);
 			}
 		}
@@ -32,10 +32,16 @@ class TelemetryPayload {
 			return size;
 		}
 
+		union Pack {
+				struct {
+						unsigned int id :sizeof(uint_fast8_t);
+						unsigned int b :sizeof(long);
+				} packed;
+		};
+
 	private:
 		byte* payload;
 		size_t size;
-		uint8_t id;
 };
 }
 

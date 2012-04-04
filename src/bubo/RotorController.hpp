@@ -81,6 +81,7 @@ class RotorController: public CommandListener, public RotorInterface {
 	private:
 		/** The start address in EEPROM of the rotorconfiguration */
 		static const int CONFIG_EEPROM_ADDRESS;
+		static const int CONFIG_STORED_FLAG;
 
 		/**
 		 * 10 bit A/D converters in the Arduino have a max value of 1023

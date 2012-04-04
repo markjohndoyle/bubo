@@ -50,6 +50,7 @@ void CommandProcessor::decodeCommand(char inChar) {
 	}
 }
 
+
 void CommandProcessor::processAzElNumeric(char character) {
 	switch (wCmdCurrentBytePosition) {
 		// first azimuth character

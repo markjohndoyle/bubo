@@ -10,7 +10,7 @@
 #include "bubo/RotorController.hpp"
 #include "bubo/CommandProcessor.hpp"
 #include "bubo/TelemetryPayload.hpp"
-#include "bubo/TelemetryProducer.hpp"
+#include "bubo/RotorTelemetryProducer.hpp"
 
 /** MAC address for the Ethernet shield */
 static byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0x8E, 0x5B };
@@ -173,16 +173,8 @@ void outputTelemetry() {
 	// TODO nasty get azimuth from rotor for check; azimuth is also gathered by tm producer.
 	long az = rotorController.getCurrentAzimuth();
 	if (az != previousAz) {
-		bubo::TelemetryPayload azTmPayload = tmProducer.produceTelemetry(bubo::RotorTelemetryProducer::AZIMUTH);
+		bubo::TelemetryPayload azTmPayload = tmProducer.produceTelemetry(bubo::RotorTelemetryProducer::POSITION);
 		tmServer.write(azTmPayload.getPayload(), azTmPayload.getSize());
-		previousAz = az;
-	}
-
-	// TODO nasty get elevation from rotor for check; elevation is also gathered by tm producer.
-	long el = rotorController.getCurrentElevation();
-	if (el != previousAz) {
-		bubo::TelemetryPayload elTmPayload = tmProducer.produceTelemetry(bubo::RotorTelemetryProducer::ELEVATION);
-		tmServer.write(elTmPayload.getPayload(), elTmPayload.getSize());
 		previousAz = az;
 	}
 

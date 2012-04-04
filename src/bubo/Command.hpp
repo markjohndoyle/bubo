@@ -11,7 +11,7 @@
 namespace bubo {
 
 /**
- * TODO currently only supports w commands.
+ * TODO currently only supports w commands. Basic design, not really extensible.
  */
 class Command {
 	public:
