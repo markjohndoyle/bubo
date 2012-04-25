@@ -27,8 +27,11 @@ TelemetryPayload RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
 			break;
 	}
 
-	azimuth = htonl(azimuth);
-	elevation = htonl(elevation);
+//	Serial.println(azimuth);
+//	Serial.println(elevation);
+
+//	azimuth = htonl(azimuth);
+//	elevation = htonl(elevation);
 
 	unsigned long int payloadSize = (sizeof(long) * 2) + sizeof(uint_fast8_t);
 	byte* const bytes = (byte*) (malloc(payloadSize));
@@ -42,11 +45,25 @@ TelemetryPayload RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
 		bytes[6] = elevation << 8;
 		bytes[7] = elevation << 16;
 		bytes[8] = elevation << 24;
+
+		Serial.println("----------");
+		Serial.println(azimuth);
+		Serial.println(elevation);
+		Serial.println(bytes[0], BIN);
+		Serial.println(bytes[1], BIN);
+		Serial.println(bytes[2], BIN);
+		Serial.println(bytes[3], BIN);
+		Serial.println(bytes[4], BIN);
+		Serial.println(bytes[5], BIN);
+		Serial.println(bytes[6], BIN);
+		Serial.println(bytes[7], BIN);
+		Serial.println(bytes[8], BIN);
+		Serial.println("");
 	}
 	else {
 		Serial.println("Failed to allocate bytes for TM");
 	}
 
-	return bubo::TelemetryPayload(bytes, 4, id);
+	return bubo::TelemetryPayload(bytes, 9, id);
 }
 
