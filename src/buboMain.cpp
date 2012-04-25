@@ -6,6 +6,7 @@
 #include <stdlib.h>
 #include "SPI/SPI.h"
 #include "Ethernet/Ethernet.h"
+#include "Ethernet/EthernetUdp.h"
 #include "LiquidCrystal_I2C/LiquidCrystal_I2C.h"
 #include "bubo/RotorController.hpp"
 #include "bubo/CommandProcessor.hpp"
@@ -18,8 +19,8 @@ static byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0x8E, 0x5B };
 /** The Ethernet Server that listens for commands */
 EthernetServer commandServer(23);
 
-/** The Ethernet Server that outputs TM. Connections are ignored */
-EthernetServer tmServer(54780);
+const uint16_t udpServerPort = 5478;
+EthernetUDP tmServer;
 
 // TODO For future static assigned IP
 /** Server IP */
@@ -171,12 +172,14 @@ void updateDisplay() {
 long previousAz = -99999;
 void outputTelemetry() {
 	// TODO nasty get azimuth from rotor for check; azimuth is also gathered by tm producer.
-	long az = rotorController.getCurrentAzimuth();
-	if (az != previousAz) {
+//	long az = rotorController.getCurrentAzimuth();
+//	if (az != previousAz) {
 		bubo::TelemetryPayload azTmPayload = tmProducer.produceTelemetry(bubo::RotorTelemetryProducer::POSITION);
+		tmServer.beginPacket(tmServer.remoteIP(), tmServer.remotePort());
 		tmServer.write(azTmPayload.getPayload(), azTmPayload.getSize());
-		previousAz = az;
-	}
+		tmServer.endPacket();
+//		previousAz = az;
+//	}
 
 }
 
@@ -228,7 +231,7 @@ bool setupEthernetServer() {
 	}
 
 	commandServer.begin();
-	tmServer.begin();
+	tmServer.begin(udpServerPort);
 
 	// print local IP address to LCD screen.
 	// TODO change from serial to LCD screen print.
