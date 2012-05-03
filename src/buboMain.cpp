@@ -125,7 +125,7 @@ void updateDisplay() {
 	}
 	else {
 		lcd.home();
-		if(azLabelSet) {
+		if (azLabelSet) {
 			lcd.print("                ");
 			lcd.setCursor(0, 0);
 			azLabelSet = false;
@@ -159,7 +159,7 @@ void updateDisplay() {
 	}
 	else {
 		lcd.setCursor(0, 1);
-		if(elLabelSet) {
+		if (elLabelSet) {
 			lcd.print("                ");
 			lcd.setCursor(0, 1);
 			elLabelSet = false;
@@ -174,13 +174,46 @@ void outputTelemetry() {
 	// TODO nasty get azimuth from rotor for check; azimuth is also gathered by tm producer.
 //	long az = rotorController.getCurrentAzimuth();
 //	if (az != previousAz) {
-		bubo::TelemetryPayload azTmPayload = tmProducer.produceTelemetry(bubo::RotorTelemetryProducer::POSITION);
-		tmServer.beginPacket(tmServer.remoteIP(), tmServer.remotePort());
-		tmServer.write(azTmPayload.getPayload(), azTmPayload.getSize());
-		tmServer.endPacket();
+	bubo::TelemetryPayload azTmPayload = tmProducer.produceTelemetry(bubo::RotorTelemetryProducer::POSITION);
+//		Serial.println(tmServer.remoteIP());
+	IPAddress broadcast(192, 168, 0, 255);
+	int check = tmServer.beginPacket(broadcast, 4023);
+	if(check != 1) {
+		Serial.println("[ERROR] - Could not create UDP packet with supplied remote ip and port");
+		return;
+	}
+	tmServer.write(azTmPayload.getPayload(), azTmPayload.getSize());
+	tmServer.endPacket();
 //		previousAz = az;
 //	}
 
+}
+
+bool checkForTmClient() {
+	bool result = false;
+	char packetBuffer[UDP_TX_PACKET_MAX_SIZE]; //buffer to hold incoming packet,
+	int packetSize = tmServer.parsePacket();
+	if (tmServer.available()) {
+		Serial.print("Received packet of size ");
+		Serial.println(packetSize);
+		Serial.print("From ");
+		IPAddress remote = tmServer.remoteIP();
+		for (int i = 0; i < 4; i++) {
+			Serial.print(remote[i], DEC);
+			if (i < 3) {
+				Serial.print(".");
+			}
+		}
+		Serial.print(", port ");
+		Serial.println(tmServer.remotePort());
+
+		// read the packet into packetBufffer
+		tmServer.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
+		Serial.println("Contents:");
+		Serial.println(packetBuffer);
+		result = true;
+	}
+	return result;
 }
 
 /**
@@ -211,7 +244,9 @@ void loop() {
 		rtcLastDisplayUpdate = elapsedTime;
 	}
 
-	outputTelemetry();
+//	if (checkForTmClient()) {
+		outputTelemetry();
+//	}
 
 	updateDisplay();
 }
