@@ -9,28 +9,9 @@
 #include "Ethernet/EthernetUdp.h"
 #include "LiquidCrystal_I2C/LiquidCrystal_I2C.h"
 #include "bubo/RotorController.hpp"
-#include "bubo/CommandProcessor.hpp"
+#include "bubo/commanding/CommandProcessor.hpp"
 #include "bubo/TelemetryPayload.hpp"
 #include "bubo/RotorTelemetryProducer.hpp"
-
-/** MAC address for the Ethernet shield */
-static byte mac[] = { 0x90, 0xA2, 0xDA, 0x00, 0x8E, 0x5B };
-
-/** The Ethernet Server that listens for commands */
-EthernetServer commandServer(23);
-
-const uint16_t udpServerPort = 5478;
-EthernetUDP tmServer;
-
-// TODO For future static assigned IP
-/** Server IP */
-IPAddress ip(192, 168, 0, 50);
-/** Server network gateway */
-IPAddress gateway(192, 168, 0, 1);
-/** Server network subnet */
-IPAddress subnet(255, 255, 240, 0);
-
-EthernetClient client;
 
 long previousRotorAzimuth = 0L; // previous rotor azimuth in degrees * 100
 long previousRotorElevation = 0L; // previous rotor azimuth in degrees * 100
@@ -47,40 +28,19 @@ String azRotorMovement; // string for az rotor move display
 String elRotorMovement; // string for el rotor move display
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // set the LCD address to 0x20 for a 16 chars and 2 line display
-bubo::CommandProcessor commandProcessor;
+
+bubo::commanding::CommandServer commandServer;
+bubo::commanding::CommandProcessor tcpCommandProcessor(&commandServer);
+bubo::commanding::SerialCommandSource serialCommandServer;
+bubo::commanding::CommandProcessor serialCommandProcessor(&serialCommandServer);
+
 bubo::RotorController rotorController;
 bubo::RotorTelemetryProducer tmProducer(&rotorController);
 
-/**
- * Returns a String of Bubo's IP address.
- */
-String ipToString() {
-	ip = Ethernet.localIP();
-	String ipStr;
-	for (byte thisByte = 0; thisByte < 4; thisByte++) {
-		// print the value of each byte of the IP address:
-		ipStr += ip[thisByte];
-		ipStr += ".";
-	}
-	return ipStr;
-}
 
-void checkForCommand() {
-	client = commandServer.available();
-
-	if (client) {
-		if (client.available() > 0) {
-			char inByte = client.read();
-			commandProcessor.decodeCommand(inByte);
-		}
-	}
-
-	// Also check in serial interface. Good for development/debugging.
-	// Ethernet and serial will interrupt each others commands!
-	if (Serial.available() > 0) {
-		char inSerialByte = Serial.read();
-		commandProcessor.decodeCommand(inSerialByte);
-	}
+void processCommands() {
+	tcpCommandProcessor.processCommands();
+	serialCommandProcessor.processCommands();
 }
 
 bool azLabelSet = false;
@@ -224,7 +184,7 @@ bool checkForTmClient() {
  * 		2. Rotate phase.
  */
 void loop() {
-	checkForCommand();
+	processCommands();
 
 	// get current elapsed time
 	unsigned long elapsedTime = millis();
@@ -244,38 +204,11 @@ void loop() {
 		rtcLastDisplayUpdate = elapsedTime;
 	}
 
-//	if (checkForTmClient()) {
-		outputTelemetry();
-//	}
+	outputTelemetry();
 
 	updateDisplay();
 }
 
-/**
- * Return bool true on success.
- */
-bool setupEthernetServer() {
-	// start the Ethernet connection:
-	lcd.clear();
-	lcd.print("Requesting IP");
-
-	if (Ethernet.begin(mac) == 0) {
-		lcd.clear();
-		lcd.print("No IP from DHCP");
-		return false;
-	}
-
-	commandServer.begin();
-	tmServer.begin(udpServerPort);
-
-	// print local IP address to LCD screen.
-	// TODO change from serial to LCD screen print.
-	Serial.print("My IP address: ");
-	Serial.println(ipToString());
-	Serial.println();
-
-	return true;
-}
 
 void setup() {
 	bool error = false;
@@ -289,20 +222,16 @@ void setup() {
 	// initialise serial port:
 	Serial.begin(9600);
 
-	if (!setupEthernetServer()) {
-		error = true;
-	}
-
 	rotorController = bubo::RotorController();
 
-	commandProcessor.addCommandListener(&rotorController);
+	tcpCommandProcessor.addCommandListener(&rotorController);
 
 	if (!error) {
 		lcd.clear();
 		delay(100);
 		lcd.print("Boot ok");
 		lcd.setCursor(0, 1);
-		lcd.print(ipToString());
+//		lcd.print(ipToString());
 	}
 
 }

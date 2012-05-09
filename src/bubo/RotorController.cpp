@@ -8,6 +8,7 @@
 #include "utilEeprom/EEPROManything.hpp"
 
 using namespace bubo;
+using namespace bubo::commanding;
 
 /** Base address in EEPROM to determine if a config exists at address CONFIG_EEPROM_ADDRESS */
 const int RotorController::CONFIG_STORED_FLAG = 0x01;

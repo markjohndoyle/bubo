@@ -9,6 +9,8 @@
 #define COMMAND_HPP_
 
 namespace bubo {
+namespace commanding {
+namespace commands {
 
 /**
  * TODO currently only supports w commands. Basic design, not really extensible.
@@ -29,6 +31,8 @@ class Command {
 
 };
 
+}
+}
 }
 
 #endif /* COMMAND_HPP_ */

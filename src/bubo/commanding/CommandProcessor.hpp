@@ -8,19 +8,23 @@
 #ifndef COMMANDPROCESSOR_HPP_
 #define COMMANDPROCESSOR_HPP_
 
-#include "bubo/CommandListener.hpp"
+#include "CommandListener.hpp"
+#include "CommandSource.h"
 
 namespace bubo {
+namespace commanding {
 
 class CommandProcessor {
 	public:
-		CommandProcessor();
-
-		void decodeCommand(char inChar);
+		CommandProcessor(CommandSource* commandSource);
 
 		void addCommandListener(CommandListener* listener);
 
+		void processCommands();
+
 	private:
+		CommandSource* cmdSource;
+
 		// FIXME move to another class...struct at least. Violating SRP here.
 		/** If a received byte is a char W or W then a gs232 w command is arriving */
 		bool wCmdActive;
@@ -33,10 +37,12 @@ class CommandProcessor {
 
 		CommandListener* cmdListener;
 
-		void processAzElNumeric(char character);
+		void decodeCommand(char inChar);
 
+		void processAzElNumeric(char character);
 };
 
+}
 }
 
 #endif /* COMMANDPROCESSOR_HPP_ */

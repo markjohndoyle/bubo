@@ -4,14 +4,19 @@
  *  Created on: Mar 22, 2012
  *      Author: Mark Doyle
  */
-#include "bubo/CommandProcessor.hpp"
-#include "bubo/Command.hpp"
+#include "CommandProcessor.hpp"
+#include "commands/Command.hpp"
 #include "Arduino.h"
 
-using namespace bubo;
+using namespace bubo::commanding;
+using namespace bubo::commanding::commands;
 
-CommandProcessor::CommandProcessor() :
-		wCmdActive(false), wCmdCurrentBytePosition(0) {
+CommandProcessor::CommandProcessor(CommandSource* commandSource)
+	: cmdSource(commandSource), wCmdActive(false), wCmdCurrentBytePosition(0) {
+}
+
+void CommandProcessor::processCommands() {
+	decodeCommand(cmdSource->getByte());
 }
 
 void CommandProcessor::decodeCommand(char inChar) {
