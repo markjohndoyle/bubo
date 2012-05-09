@@ -17,6 +17,12 @@ CommandProcessor::CommandProcessor(CommandSource* commandSource)
 
 void CommandProcessor::processCommands() {
 	decodeCommand(cmdSource->getByte());
+	// if -1 return
+	// if active command
+	//	if last arg successful
+	//		send byte as arg to command
+	// else
+	//	construct concrete command
 }
 
 void CommandProcessor::decodeCommand(char inChar) {
@@ -94,7 +100,7 @@ void CommandProcessor::processAzElNumeric(char character) {
 			wCmdElArg = wCmdElArg * 100;
 			Serial.println("Valid command assembled");
 			if (cmdListener != 0) {
-				this->cmdListener->acceptCommand(Command(Command::W, wCmdAzArg, wCmdElArg));
+				this->cmdListener->acceptCommand(RotorCommandW(RotorCommandW::W, wCmdAzArg, wCmdElArg));
 			}
 			break;
 		}

@@ -17,7 +17,7 @@ class CommandListener {
 	public:
 		virtual ~CommandListener() {};
 
-		virtual void acceptCommand(commands::Command cmd) = 0;
+		virtual void acceptCommand(commands::RotorCommandW cmd) = 0;
 };
 
 }

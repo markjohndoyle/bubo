@@ -15,7 +15,7 @@ namespace commands {
 /**
  * TODO currently only supports w commands. Basic design, not really extensible.
  */
-class Command {
+class RotorCommandW {
 	public:
 		enum CommandType {W};
 
@@ -23,7 +23,7 @@ class Command {
 		long azimuth;
 		long elevation;
 
-		Command(Command::CommandType cmdType, long azimuthIn, long elevationIn) {
+		RotorCommandW(RotorCommandW::CommandType cmdType, long azimuthIn, long elevationIn) {
 			type = cmdType;
 			azimuth = azimuthIn;
 			elevation = elevationIn;
