@@ -9,7 +9,7 @@
 #define TELEMETRYSERVER_H_
 
 #include "Ethernet/EthernetUdp.h"
-#include "bubo/network/BuboEthernet.h"
+#include "bubo/network/BuboEthernet.hpp"
 
 namespace bubo {
 namespace telemetry {
@@ -19,6 +19,14 @@ class TelemetryServer : public bubo::network::BuboEthernet {
 public:
 	TelemetryServer();
 	virtual ~TelemetryServer();
+
+	EthernetUDP getUdp() const {
+		return udp;
+	}
+
+	const uint16_t getUdpServerPort() const {
+		return udpServerPort;
+	}
 
 private:
 	/** The UDP sender and receiver */

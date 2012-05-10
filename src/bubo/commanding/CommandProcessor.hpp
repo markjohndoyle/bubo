@@ -9,12 +9,14 @@
 #define COMMANDPROCESSOR_HPP_
 
 #include "CommandListener.hpp"
-#include "CommandSource.h"
+#include "CommandSource.hpp"
+#include "factories/CommandFactory.hpp"
+#include "factories/CommandFactoryListener.hpp"
 
 namespace bubo {
 namespace commanding {
 
-class CommandProcessor {
+class CommandProcessor : public factories::CommandFactoryListener  {
 	public:
 		CommandProcessor(CommandSource* commandSource);
 
@@ -22,8 +24,14 @@ class CommandProcessor {
 
 		void processCommands();
 
+		void commandComplete(commands::BaseCommand* command);
+
+		void commandFailed(commands::BaseCommand* command);
+
 	private:
 		CommandSource* cmdSource;
+
+		factories::CommandFactory* commandFactories[2];
 
 		// FIXME move to another class...struct at least. Violating SRP here.
 		/** If a received byte is a char W or W then a gs232 w command is arriving */

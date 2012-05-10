@@ -8,14 +8,15 @@
 #ifndef COMMANDSOURCE_H_
 #define COMMANDSOURCE_H_
 
+#include "Arduino.h"
+
 namespace bubo {
 namespace commanding {
 
-#include "Arduino.h"
 
 class CommandSource {
 public:
-	virtual ~CommandSource();
+	virtual ~CommandSource() {};
 	virtual byte getByte() = 0;
 };
 

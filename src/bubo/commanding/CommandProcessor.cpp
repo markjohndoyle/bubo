@@ -4,12 +4,14 @@
  *  Created on: Mar 22, 2012
  *      Author: Mark Doyle
  */
+#include "Arduino.h"
 #include "CommandProcessor.hpp"
 #include "commands/Command.hpp"
-#include "Arduino.h"
 
-using namespace bubo::commanding;
-using namespace bubo::commanding::commands;
+namespace bubo {
+namespace commanding {
+
+using namespace commands;
 
 CommandProcessor::CommandProcessor(CommandSource* commandSource)
 	: cmdSource(commandSource), wCmdActive(false), wCmdCurrentBytePosition(0) {
@@ -62,6 +64,13 @@ void CommandProcessor::decodeCommand(char inChar) {
 }
 
 
+void CommandProcessor::commandComplete(commands::BaseCommand* command) {
+	this->cmdListener->acceptCommand(command);
+}
+
+void CommandProcessor::commandFailed(commands::BaseCommand* command) {
+}
+
 void CommandProcessor::processAzElNumeric(char character) {
 	switch (wCmdCurrentBytePosition) {
 		// first azimuth character
@@ -100,7 +109,8 @@ void CommandProcessor::processAzElNumeric(char character) {
 			wCmdElArg = wCmdElArg * 100;
 			Serial.println("Valid command assembled");
 			if (cmdListener != 0) {
-				this->cmdListener->acceptCommand(RotorCommandW(RotorCommandW::W, wCmdAzArg, wCmdElArg));
+				Serial.println("Command accepted place holder - old code area. Being refactored");
+//				this->cmdListener->acceptCommand(RotorCommandW(RotorCommandW::W, wCmdAzArg, wCmdElArg));
 			}
 			break;
 		}
@@ -114,3 +124,6 @@ void CommandProcessor::processAzElNumeric(char character) {
 void CommandProcessor::addCommandListener(CommandListener* listener) {
 	this->cmdListener = listener;
 }
+
+} /* namespace commanding */
+} /* namespace bubo */

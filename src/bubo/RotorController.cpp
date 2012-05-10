@@ -9,6 +9,7 @@
 
 using namespace bubo;
 using namespace bubo::commanding;
+using namespace bubo::commanding::commands;
 
 /** Base address in EEPROM to determine if a config exists at address CONFIG_EEPROM_ADDRESS */
 const int RotorController::CONFIG_STORED_FLAG = 0x01;
@@ -158,18 +159,18 @@ void RotorController::stopElevationRotor() {
 	rotatingElevation = false;
 }
 
-void RotorController::acceptCommand(Command cmd) {
-	if (isCommandValid(cmd)) {
-		targetAzimuth = cmd.azimuth ;
-		targetElevation = cmd.elevation;
-		Serial.println(targetAzimuth);
-		Serial.println(targetElevation);
-	}
+void RotorController::acceptCommand(BaseCommand* cmd) {
+//	if (isCommandValid(cmd)) {
+//		targetAzimuth = cmd.azimuth ;
+//		targetElevation = cmd.elevation;
+//		Serial.println(targetAzimuth);
+//		Serial.println(targetElevation);
+//	}
 }
 
-bool RotorController::isCommandValid(Command cmd) {
+bool RotorController::isCommandValid(RotorCommandW cmd) {
 	bool result = false;
-	if (cmd.type == Command::W) {
+	if (cmd.type == RotorCommandW::W) {
 		if (!(cmd.azimuth > MAX_AZIMUTH) && !(cmd.elevation > MAX_ELEVATION)) {
 			result = true;
 		}

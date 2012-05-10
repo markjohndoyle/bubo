@@ -5,10 +5,14 @@
  *      Author: Mark Doyle
  */
 
-#include "SerialCommandSource.h"
+#include "SerialCommandSource.hpp"
 
 namespace bubo {
 namespace commanding {
+
+SerialCommandSource::~SerialCommandSource() {
+
+}
 
 byte SerialCommandSource::getByte() {
 	byte inByte = -1;

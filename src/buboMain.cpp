@@ -12,6 +12,9 @@
 #include "bubo/commanding/CommandProcessor.hpp"
 #include "bubo/TelemetryPayload.hpp"
 #include "bubo/RotorTelemetryProducer.hpp"
+#include "bubo/commanding/EthernetTcpCommandServer.hpp"
+#include "bubo/commanding/SerialCommandSource.hpp"
+#include "bubo/telemetry/TelemetryServer.hpp"
 
 long previousRotorAzimuth = 0L; // previous rotor azimuth in degrees * 100
 long previousRotorElevation = 0L; // previous rotor azimuth in degrees * 100
@@ -28,15 +31,14 @@ String azRotorMovement; // string for az rotor move display
 String elRotorMovement; // string for el rotor move display
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // set the LCD address to 0x20 for a 16 chars and 2 line display
-
-bubo::commanding::CommandServer commandServer;
+bubo::telemetry::TelemetryServer tmServer;
+bubo::commanding::EthernetTcpCommandServer commandServer;
 bubo::commanding::CommandProcessor tcpCommandProcessor(&commandServer);
 bubo::commanding::SerialCommandSource serialCommandServer;
 bubo::commanding::CommandProcessor serialCommandProcessor(&serialCommandServer);
 
 bubo::RotorController rotorController;
 bubo::RotorTelemetryProducer tmProducer(&rotorController);
-
 
 void processCommands() {
 	tcpCommandProcessor.processCommands();
@@ -137,13 +139,13 @@ void outputTelemetry() {
 	bubo::TelemetryPayload azTmPayload = tmProducer.produceTelemetry(bubo::RotorTelemetryProducer::POSITION);
 //		Serial.println(tmServer.remoteIP());
 	IPAddress broadcast(192, 168, 0, 255);
-	int check = tmServer.beginPacket(broadcast, 4023);
+	int check = tmServer.getUdp().beginPacket(broadcast, 4023);
 	if(check != 1) {
 		Serial.println("[ERROR] - Could not create UDP packet with supplied remote ip and port");
 		return;
 	}
-	tmServer.write(azTmPayload.getPayload(), azTmPayload.getSize());
-	tmServer.endPacket();
+	tmServer.getUdp().write(azTmPayload.getPayload(), azTmPayload.getSize());
+	tmServer.getUdp().endPacket();
 //		previousAz = az;
 //	}
 
@@ -152,12 +154,12 @@ void outputTelemetry() {
 bool checkForTmClient() {
 	bool result = false;
 	char packetBuffer[UDP_TX_PACKET_MAX_SIZE]; //buffer to hold incoming packet,
-	int packetSize = tmServer.parsePacket();
-	if (tmServer.available()) {
+	int packetSize = tmServer.getUdp().parsePacket();
+	if (tmServer.getUdp().available()) {
 		Serial.print("Received packet of size ");
 		Serial.println(packetSize);
 		Serial.print("From ");
-		IPAddress remote = tmServer.remoteIP();
+		IPAddress remote = tmServer.getUdp().remoteIP();
 		for (int i = 0; i < 4; i++) {
 			Serial.print(remote[i], DEC);
 			if (i < 3) {
@@ -165,10 +167,10 @@ bool checkForTmClient() {
 			}
 		}
 		Serial.print(", port ");
-		Serial.println(tmServer.remotePort());
+		Serial.println(tmServer.getUdp().remotePort());
 
 		// read the packet into packetBufffer
-		tmServer.read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
+		tmServer.getUdp().read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
 		Serial.println("Contents:");
 		Serial.println(packetBuffer);
 		result = true;
@@ -223,6 +225,8 @@ void setup() {
 	Serial.begin(9600);
 
 	rotorController = bubo::RotorController();
+
+	commandServer.initCmdServer();
 
 	tcpCommandProcessor.addCommandListener(&rotorController);
 

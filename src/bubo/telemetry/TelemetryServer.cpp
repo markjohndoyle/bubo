@@ -5,7 +5,7 @@
  *      Author: doylemr
  */
 
-#include "TelemetryServer.h"
+#include "TelemetryServer.hpp"
 
 using namespace bubo::telemetry;
 

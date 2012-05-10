@@ -5,7 +5,7 @@
  *      Author: doylemr
  */
 
-#include "BaseCommand.h"
+#include "BaseCommand.hpp"
 
 using namespace bubo::commanding::commands;
 

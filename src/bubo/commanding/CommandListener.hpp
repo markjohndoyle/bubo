@@ -8,7 +8,7 @@
 #ifndef COMMANDLISTENER_HPP_
 #define COMMANDLISTENER_HPP_
 
-#include "bubo/commanding/commands/Command.hpp"
+#include "bubo/commanding/commands/BaseCommand.hpp"
 
 namespace bubo {
 namespace commanding {
@@ -17,7 +17,7 @@ class CommandListener {
 	public:
 		virtual ~CommandListener() {};
 
-		virtual void acceptCommand(commands::RotorCommandW cmd) = 0;
+		virtual void acceptCommand(commands::BaseCommand* cmd) = 0;
 };
 
 }

@@ -1,30 +1,33 @@
 /*
- * CommandServer.h
+ * EthernetTcpCommandServer.hpp
  *
  *  Created on: 9 May 2012
- *      Author: doylemr
+ *      Author: Mark Doyle
  */
 
 #ifndef COMMANDSERVER_H_
 #define COMMANDSERVER_H_
 
-#include "CommandSource.h"
+#include "CommandSource.hpp"
 #include "Ethernet/Ethernet.h"
-#include "bubo/network/BuboEthernet.h"
+#include "bubo/network/BuboEthernet.hpp"
+#include "commands/BaseCommand.hpp"
 
 namespace bubo {
 namespace commanding {
 
 
-class CommandServer : public network::BuboEthernet, public CommandSource {
+class EthernetTcpCommandServer : public network::BuboEthernet, public CommandSource {
 public:
 	/** Default constructor uses telnet port as command server */
-	CommandServer();
+	EthernetTcpCommandServer();
 
 	/** Allows construction of command server on a specified port */
-	CommandServer(uint16_t serverPort);
+	EthernetTcpCommandServer(uint16_t serverPort);
 
-	virtual ~CommandServer();
+	~EthernetTcpCommandServer();
+
+	void initCmdServer();
 
 	/** Returns the servers ip as a string */
 	String ipToString() const;
@@ -42,7 +45,6 @@ private:
 	/** the current client */
 	EthernetClient client;
 
-	void initCmdServer();
 };
 
 }

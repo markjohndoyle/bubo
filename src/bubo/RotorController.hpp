@@ -10,6 +10,8 @@
 
 #include "Arduino.h"
 #include "bubo/commanding/CommandListener.hpp"
+#include "bubo/commanding/commands/BaseCommand.hpp"
+#include "bubo/commanding/commands/Command.hpp"
 #include "bubo/RotorInterface.hpp"
 
 namespace bubo {
@@ -28,7 +30,7 @@ class RotorController: public commanding::CommandListener, public RotorInterface
 
 		void allStop();
 
-		void acceptCommand(commanding::Command cmd);
+		void acceptCommand(commanding::commands::BaseCommand* cmd);
 
 		unsigned long getRotorMoveUpdateInterval() const;
 
@@ -134,7 +136,7 @@ class RotorController: public commanding::CommandListener, public RotorInterface
 
 		void stopElevationRotor();
 
-		bool isCommandValid(commanding::Command cmd);
+		bool isCommandValid(commanding::commands::RotorCommandW cmd);
 
 		void rotateAzimuth();
 

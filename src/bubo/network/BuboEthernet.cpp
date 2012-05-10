@@ -5,7 +5,7 @@
  *      Author: doylemr
  */
 
-#include "BuboEthernet.h"
+#include "BuboEthernet.hpp"
 
 using namespace bubo::network;
 

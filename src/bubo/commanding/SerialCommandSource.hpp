@@ -8,13 +8,15 @@
 #ifndef SERIALCOMMANDSOURCE_H_
 #define SERIALCOMMANDSOURCE_H_
 
-#include "CommandSource.h"
+#include "CommandSource.hpp"
 
 namespace bubo {
 namespace commanding {
 
-class SerialCommandSource: public CommandSource {
+class SerialCommandSource : public CommandSource {
 public:
+	~SerialCommandSource();
+
 	byte getByte();
 };
 
