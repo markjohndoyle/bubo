@@ -2,7 +2,7 @@
  * ObservableCommandFactory.cpp
  *
  *  Created on: May 10, 2012
- *      Author: mark
+ *      Author: Mark Doyle
  */
 
 #include "ObservableCommandFactory.hpp"
@@ -19,10 +19,12 @@ ObservableCommandFactory::~ObservableCommandFactory() {
 
 void ObservableCommandFactory::commandComplete() {
 	this->listener->commandComplete(commandUnderConstruction);
+	commandUnderConstruction = 0;
 }
 
 void ObservableCommandFactory::commandConstructionFailed() {
 	this->listener->commandFailed(commandUnderConstruction);
+	commandUnderConstruction = 0;
 }
 
 }/* namespace commands */

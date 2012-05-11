@@ -2,7 +2,7 @@
  * Buboe.h
  *
  *  Created on: 9 May 2012
- *      Author: doylemr
+ *      Author: Mark Doyle
  */
 
 #ifndef BUBOETHERNET_H_

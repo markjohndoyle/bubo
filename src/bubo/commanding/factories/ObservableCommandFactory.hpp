@@ -2,7 +2,7 @@
  * ObservableCommandFactory.hpp
  *
  *  Created on: May 10, 2012
- *      Author: mark
+ *      Author: Mark Doyle
  */
 
 #ifndef OBSERVABLECOMMANDFACTORY_HPP_

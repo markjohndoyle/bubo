@@ -18,6 +18,8 @@ namespace commanding {
 
 class CommandProcessor : public factories::CommandFactoryListener  {
 	public:
+		virtual ~CommandProcessor();
+
 		CommandProcessor(CommandSource* commandSource);
 
 		void addCommandListener(CommandListener* listener);
@@ -31,7 +33,13 @@ class CommandProcessor : public factories::CommandFactoryListener  {
 	private:
 		CommandSource* cmdSource;
 
-		factories::CommandFactory* commandFactories[2];
+		static const uint_fast8_t NUM_OF_FACTORIES = 2;
+
+		factories::CommandFactory* commandFactories[NUM_OF_FACTORIES];
+
+		bool commandInConstruction;
+
+		factories::CommandFactory* activeFactory;
 
 		// FIXME move to another class...struct at least. Violating SRP here.
 		/** If a received byte is a char W or W then a gs232 w command is arriving */

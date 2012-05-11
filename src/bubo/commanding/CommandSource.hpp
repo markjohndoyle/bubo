@@ -2,7 +2,7 @@
  * CommandSource.h
  *
  *  Created on: 9 May 2012
- *      Author: doylemr
+ *      Author: Mark Doyle
  */
 
 #ifndef COMMANDSOURCE_H_

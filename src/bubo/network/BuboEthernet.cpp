@@ -2,7 +2,7 @@
  * Buboe.cpp
  *
  *  Created on: 9 May 2012
- *      Author: doylemr
+ *      Author: Mark Doyle
  */
 
 #include "BuboEthernet.hpp"

@@ -27,6 +27,10 @@ public:
 
 	~EthernetTcpCommandServer();
 
+	/**
+	 * Initialises the ethernet server. Must be called in the Arudino setup. You could call it in the loop but
+	 * that would be odd. Basically, you can't have this in the constructor, too early.
+	 */
 	void initCmdServer();
 
 	/** Returns the servers ip as a string */

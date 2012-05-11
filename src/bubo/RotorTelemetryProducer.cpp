@@ -12,7 +12,7 @@ using namespace bubo;
 
 const uint8_t RotorTelemetryProducer::LAYOUT_ID_POSITION = 1;
 
-RotorTelemetryProducer::RotorTelemetryProducer(RotorInterface* rotorInterface) : rotor(rotorInterface) {
+RotorTelemetryProducer::RotorTelemetryProducer(Rotor* rotorInterface) : rotor(rotorInterface) {
 }
 
 TelemetryPayload RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {

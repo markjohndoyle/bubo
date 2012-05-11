@@ -26,6 +26,8 @@ protected:
 	bubo::commanding::commands::BaseCommand* commandUnderConstruction;
 
 public:
+	virtual ~CommandFactory() {}
+
 	/**
 	 * Instructs the factory to build the command given the next piece of data.
 	 */

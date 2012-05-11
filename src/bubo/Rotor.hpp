@@ -11,14 +11,14 @@
 
 namespace bubo {
 
-class RotorInterface {
+class Rotor {
 	public:
-		virtual ~RotorInterface() {};
+		virtual ~Rotor() {};
 
 		virtual long getCurrentAzimuth() const = 0;
 		virtual long getCurrentElevation() const = 0;
 };
 
-}
+} /* namespace bubo */
 
 #endif /* ROTORINTERFACE_HPP_ */

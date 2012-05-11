@@ -13,12 +13,10 @@ using namespace network;
 
 EthernetTcpCommandServer::EthernetTcpCommandServer() :
 		commandServer(EthernetServer(23)) {
-//	initCmdServer();
 }
 
 EthernetTcpCommandServer::EthernetTcpCommandServer(uint16_t serverPort) :
 		commandServer(EthernetServer(serverPort)) {
-//	initCmdServer();
 }
 
 EthernetTcpCommandServer::~EthernetTcpCommandServer() {

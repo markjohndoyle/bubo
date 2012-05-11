@@ -1,46 +1,44 @@
 /*
- * RotorController.cpp
+ * YaesuRotor.cpp
  *
  *  Created on: Mar 22, 2012
  *      Author: Mark Doyle
  */
-#include "bubo/RotorController.hpp"
+#include "bubo/YaesuRotor.hpp"
 #include "utilEeprom/EEPROManything.hpp"
 
 using namespace bubo;
-using namespace bubo::commanding;
-using namespace bubo::commanding::commands;
 
 /** Base address in EEPROM to determine if a config exists at address CONFIG_EEPROM_ADDRESS */
-const int RotorController::CONFIG_STORED_FLAG = 0x01;
+const int YaesuRotor::CONFIG_STORED_FLAG = 0x01;
 
 /** Base address in EEPROM to read or write the rotor config */
-const int RotorController::CONFIG_EEPROM_ADDRESS = 0x01;
+const int YaesuRotor::CONFIG_EEPROM_ADDRESS = 0x01;
 
-const uint8_t RotorController::PIN_EL_UP = 8;
-const uint8_t RotorController::PIN_EL_DOWN = 9;
-const uint8_t RotorController::PIN_AZ_LEFT = 6;
-const uint8_t RotorController::PIN_AZ_RIGHT = 5;
-const uint8_t RotorController::PIN_AZ_INPUT = A2;
-const uint8_t RotorController::PIN_EL_INPUT = A3;
+const uint8_t YaesuRotor::PIN_EL_UP = 8;
+const uint8_t YaesuRotor::PIN_EL_DOWN = 9;
+const uint8_t YaesuRotor::PIN_AZ_LEFT = 6;
+const uint8_t YaesuRotor::PIN_AZ_RIGHT = 5;
+const uint8_t YaesuRotor::PIN_AZ_INPUT = A2;
+const uint8_t YaesuRotor::PIN_EL_INPUT = A3;
 
-const long RotorController::MAX_AZIMUTH = 45000L;
-const long RotorController::MAX_ELEVATION = 18000L;
+const long YaesuRotor::MAX_AZIMUTH = 45000L;
+const long YaesuRotor::MAX_ELEVATION = 18000L;
 
 /**
  * Coefficient used to convert the analogue azimuth voltage into a degrees based upon the
  * Arduino's 10-bit ADC and the Rotor's maximum azimuth range.
  */
-const long RotorController::AZ_SCALE_FACTOR = 227;
+const long YaesuRotor::AZ_SCALE_FACTOR = 227;
 
 /**
  * Coefficient used to convert the analogue elevation voltage into a degrees based upon the
  * Arduino's 10-bit ADC and the Rotor's maximum elevation range.
  */
-const long RotorController::EL_SCALE_FACTOR = 568;
+const long YaesuRotor::EL_SCALE_FACTOR = 568;
 
 
-RotorController::RotorController() : rotorMoveUpdateInterval(100UL), rotatingAzimuth(
+YaesuRotor::YaesuRotor() : rotorMoveUpdateInterval(100UL), rotatingAzimuth(
 				false), rotatingElevation(false) {
 
 	// Rotor config defaults
@@ -63,18 +61,18 @@ RotorController::RotorController() : rotorMoveUpdateInterval(100UL), rotatingAzi
 	targetElevation = currentElevation;
 }
 
-RotorController::~RotorController() {
+YaesuRotor::~YaesuRotor() {
 }
 
-unsigned long RotorController::getRotorMoveUpdateInterval() const {
+unsigned long YaesuRotor::getRotorMoveUpdateInterval() const {
 	return rotorMoveUpdateInterval;
 }
 
-void RotorController::setRotorMoveUpdateInterval(unsigned long rotorMoveUpdateInterval) {
+void YaesuRotor::setRotorMoveUpdateInterval(unsigned long rotorMoveUpdateInterval) {
 	this->rotorMoveUpdateInterval = rotorMoveUpdateInterval;
 }
 
-void RotorController::rotate() {
+void YaesuRotor::rotate() {
 	// AZIMUTH
 	// get current azimuth from G-5500
 	updateAzimuth();
@@ -100,7 +98,7 @@ void RotorController::rotate() {
 	}
 }
 
-void RotorController::rotateAzimuth() {
+void YaesuRotor::rotateAzimuth() {
 	// calculate rotor move
 	long azDelta = targetAzimuth - currentAzimuth;
 	// adjust move if necessary
@@ -129,7 +127,7 @@ void RotorController::rotateAzimuth() {
 	}
 }
 
-void RotorController::rotateElevation() {
+void YaesuRotor::rotateElevation() {
 	// calculate rotor move
 	long elDelta = targetElevation - currentElevation;
 
@@ -147,59 +145,41 @@ void RotorController::rotateElevation() {
 	}
 }
 
-void RotorController::stopAzimuthRotor() {
+void YaesuRotor::stopAzimuthRotor() {
 	digitalWrite(PIN_AZ_LEFT, LOW);
 	digitalWrite(PIN_AZ_RIGHT, LOW);
 	rotatingAzimuth = false;
 }
 
-void RotorController::stopElevationRotor() {
+void YaesuRotor::stopElevationRotor() {
 	digitalWrite(PIN_EL_UP, LOW);
 	digitalWrite(PIN_EL_DOWN, LOW);
 	rotatingElevation = false;
 }
 
-void RotorController::acceptCommand(BaseCommand* cmd) {
-//	if (isCommandValid(cmd)) {
-//		targetAzimuth = cmd.azimuth ;
-//		targetElevation = cmd.elevation;
-//		Serial.println(targetAzimuth);
-//		Serial.println(targetElevation);
-//	}
-}
 
-bool RotorController::isCommandValid(RotorCommandW cmd) {
-	bool result = false;
-	if (cmd.type == RotorCommandW::W) {
-		if (!(cmd.azimuth > MAX_AZIMUTH) && !(cmd.elevation > MAX_ELEVATION)) {
-			result = true;
-		}
-	}
-	return result;
-}
-
-void RotorController::allStop() {
+void YaesuRotor::allStop() {
 	stopAzimuthRotor();
 	stopElevationRotor();
 }
 
-void RotorController::updateAzimuth() {
+void YaesuRotor::updateAzimuth() {
 	long sensorValue = analogRead(PIN_AZ_INPUT);
 	currentAzimuth = ((sensorValue * 10000) / AZ_SCALE_FACTOR) - config.azimuthaAdZeroOffset;
 }
 
-void RotorController::updateElevation() {
+void YaesuRotor::updateElevation() {
 	long sensorValue = analogRead(PIN_EL_INPUT);
 //	Serial.print("VOLT: ");Serial.println(sensorValue);
 	currentElevation = (sensorValue * 10000) / EL_SCALE_FACTOR;
 }
 
-int RotorController::saveConfig() const {
+int YaesuRotor::saveConfig() const {
 	// write config to eeprom
 	return EEPROM_writeAnything(CONFIG_EEPROM_ADDRESS, config);
 }
 
-int RotorController::loadConfig() {
+int YaesuRotor::loadConfig() {
 	// read config from eeprom and overwrite current config
 	return EEPROM_readAnything(CONFIG_EEPROM_ADDRESS, config);
 }

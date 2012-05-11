@@ -1,8 +1,8 @@
 /*
- * BaseCommand.h
+ * BaseCommand.hpp
  *
  *  Created on: 9 May 2012
- *      Author: doylemr
+ *      Author: Mark Doyle
  */
 
 #ifndef BASECOMMAND_H_
@@ -17,21 +17,17 @@ namespace commands {
 class BaseCommand {
 
 public:
+	BaseCommand(uint16_t numOfArgs);
+
 	virtual ~BaseCommand();
 
-	uint16_t getArgumentsLength() const;
-	void setArgumentsLength(uint16_t argumentsLength);
-
-	char getCommandId() const;
-	void setCommandId(char commandId);
-
 	virtual bool processArgument(byte arg) = 0;
-	virtual void execute() = 0;
+
+	virtual void execute() const = 0;
 
 
 protected:
-	char commandId;
-	uint16_t argumentsLength;
+	uint16_t numOfArgs;
 
 };
 
