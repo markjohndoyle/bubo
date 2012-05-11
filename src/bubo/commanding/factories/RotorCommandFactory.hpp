@@ -11,14 +11,15 @@
 #include "ObservableCommandFactory.hpp"
 
 namespace bubo {
-// forward declare bubo::Rotor
-class Rotor;
+	namespace rotor {
+		class Rotor;
+	}
 namespace commanding {
 namespace factories {
 
 class RotorCommandFactory : public ObservableCommandFactory {
 public:
-	RotorCommandFactory(Rotor* targetRotor);
+	RotorCommandFactory(rotor::Rotor* targetRotor);
 
 	virtual ~RotorCommandFactory();
 
@@ -31,7 +32,7 @@ private:
 
 	char commandIds[NUM_OF_COMMANDS];
 
-	Rotor* rotor;
+	rotor::Rotor* rotor;
 
 	/**
 	 * Factory method for creating the concrete Rotor command. This is the only place that

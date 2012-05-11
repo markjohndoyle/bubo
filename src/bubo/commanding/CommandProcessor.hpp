@@ -8,7 +8,6 @@
 #ifndef COMMANDPROCESSOR_HPP_
 #define COMMANDPROCESSOR_HPP_
 
-#include "CommandListener.hpp"
 #include "CommandSource.hpp"
 #include "factories/CommandFactory.hpp"
 #include "factories/CommandFactoryListener.hpp"
@@ -21,8 +20,6 @@ class CommandProcessor : public factories::CommandFactoryListener  {
 		virtual ~CommandProcessor();
 
 		CommandProcessor(CommandSource* commandSource);
-
-		void addCommandListener(CommandListener* listener);
 
 		void processCommands();
 
@@ -37,28 +34,12 @@ class CommandProcessor : public factories::CommandFactoryListener  {
 
 		factories::CommandFactory* commandFactories[NUM_OF_FACTORIES];
 
-		bool commandInConstruction;
-
 		factories::CommandFactory* activeFactory;
 
-		// FIXME move to another class...struct at least. Violating SRP here.
-		/** If a received byte is a char W or W then a gs232 w command is arriving */
-		bool wCmdActive;
-		/** If a w command is arriving we track the current byte position with this field */
-		unsigned short wCmdCurrentBytePosition;
-		/** As the w command arrives we populate this long value. */
-		long wCmdAzArg;
-
-		long wCmdElArg;
-
-		CommandListener* cmdListener;
-
-		void decodeCommand(char inChar);
-
-		void processAzElNumeric(char character);
+		bool commandInConstruction;
 };
 
-}
-}
+} /* namespace commanding */
+} /* namespace bubo */
 
 #endif /* COMMANDPROCESSOR_HPP_ */

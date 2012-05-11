@@ -10,6 +10,7 @@
 #include "Arduino.h"
 
 namespace bubo {
+namespace rotor {
 
 class Rotor {
 	public:
@@ -17,8 +18,13 @@ class Rotor {
 
 		virtual long getCurrentAzimuth() const = 0;
 		virtual long getCurrentElevation() const = 0;
+
+		virtual void setTargetAzimuth(long azimuth) = 0;
+		virtual void setTargetElevation(long elevation) = 0;
 };
 
+
+} /* namespace rotor */
 } /* namespace bubo */
 
 #endif /* ROTORINTERFACE_HPP_ */

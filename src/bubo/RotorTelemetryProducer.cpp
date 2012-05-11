@@ -6,9 +6,12 @@
  *
  */
 #include "bubo/RotorTelemetryProducer.hpp"
+#include "bubo/rotor/Rotor.hpp"
 #include "Ethernet/util.h"
 
-using namespace bubo;
+namespace bubo {
+
+using namespace rotor;
 
 const uint8_t RotorTelemetryProducer::LAYOUT_ID_POSITION = 1;
 
@@ -67,3 +70,4 @@ TelemetryPayload RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
 	return bubo::TelemetryPayload(bytes, 9, id);
 }
 
+} /* namespace bubo */

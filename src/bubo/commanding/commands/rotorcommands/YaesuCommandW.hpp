@@ -1,5 +1,5 @@
 /*
- * Command.hpp
+ * YaesuCommandW.hpp
  *
  *  Created on: May 11, 2012
  *      Author: Mark Doyle
@@ -9,17 +9,16 @@
 #define COMMAND_HPP_
 
 #include "RotorCommand.hpp"
-#include "bubo/Rotor.hpp"
 
 namespace bubo {
 namespace commanding {
 namespace commands {
 
-class RotorCommandW : public RotorCommand {
+class YaesuCommandW : public RotorCommand {
 public:
-	RotorCommandW(Rotor* targetRotor);
+	YaesuCommandW(rotor::Rotor* targetRotor);
 
-	~RotorCommandW();
+	~YaesuCommandW();
 
 	virtual bool processArgument(byte arg);
 

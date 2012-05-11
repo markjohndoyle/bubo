@@ -9,20 +9,23 @@
 #define ROTORTELEMETRYPRODUCER_HPP_
 
 #include "bubo/TelemetryPayload.hpp"
-#include "bubo/Rotor.hpp"
 
 namespace bubo {
+
+namespace rotor {
+	class Rotor;
+}
 
 class RotorTelemetryProducer {
 	public:
 		enum TM_TYPE { POSITION };
 
-		RotorTelemetryProducer(Rotor* rotorInterface);
+		RotorTelemetryProducer(rotor::Rotor* rotorInterface);
 
 		TelemetryPayload produceTelemetry(TM_TYPE type);
 
 	private:
-		Rotor* rotor;
+		rotor::Rotor* rotor;
 
 		static const uint8_t LAYOUT_ID_POSITION;
 };

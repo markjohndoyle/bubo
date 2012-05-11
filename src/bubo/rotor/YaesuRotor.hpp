@@ -1,5 +1,5 @@
 /*
- * RotorController.hpp
+ * YaesuRotor.hpp
  *
  *  Created on: Mar 22, 2012
  *      Author: Mark Doyle
@@ -9,9 +9,10 @@
 #define ROTORCONTROLLER_HPP_
 
 #include "Arduino.h"
-#include "bubo/Rotor.hpp"
+#include "Rotor.hpp"
 
 namespace bubo {
+namespace rotor {
 
 /**
  * Conventions:
@@ -46,6 +47,10 @@ class YaesuRotor : public Rotor {
 		long getTargetElevation() const {
 			return targetElevation;
 		}
+
+		void setTargetAzimuth(long azimuth);
+
+		void setTargetElevation(long elevation);
 
 		long getAzimuthaAdZeroOffset() const {
 			return this->config.azimuthaAdZeroOffset;
@@ -158,6 +163,7 @@ class YaesuRotor : public Rotor {
 		} config;
 };
 
-}
+} /* namespace rotor */
+} /* namespace bubo */
 
 #endif /* ROTORCONTROLLER_HPP_ */

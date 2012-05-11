@@ -6,14 +6,15 @@
  */
 
 #include "RotorCommandFactory.hpp"
-#include "bubo/commanding/commands/rotorcommands/RotorCommandW.hpp"
-#include "bubo/Rotor.hpp"
+#include "bubo/commanding/commands/rotorcommands/YaesuCommandW.hpp"
+#include "bubo/rotor/Rotor.hpp"
 
 namespace bubo {
 namespace commanding {
 namespace factories {
 
 using namespace commands;
+using namespace rotor;
 
 const int RotorCommandFactory::NUM_OF_COMMANDS;
 
@@ -43,8 +44,8 @@ void RotorCommandFactory::buildCommand(byte data) {
  * This is the only place you need to alter when adding new rotor commands.
  */
 void RotorCommandFactory::instantiateConcreteCommand(char id) {
-	if (id == 'w') {
-		commandUnderConstruction = new RotorCommandW(rotor);
+	if (id == 'w' || id == 'W') {
+		commandUnderConstruction = new YaesuCommandW(rotor);
 	}
 }
 

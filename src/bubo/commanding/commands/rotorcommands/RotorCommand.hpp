@@ -10,15 +10,16 @@
 
 #include "bubo/commanding/commands/BaseCommand.hpp"
 
-#include "bubo/Rotor.hpp"
-
 namespace bubo {
+	namespace rotor {
+		class Rotor;
+	}
 namespace commanding {
 namespace commands {
 
 class RotorCommand: public BaseCommand {
 public:
-	RotorCommand(Rotor* targetRotor, uint16_t numOfArgs);
+	RotorCommand(rotor::Rotor* targetRotor, uint16_t numOfArgs);
 
 	virtual ~RotorCommand();
 
@@ -27,7 +28,7 @@ public:
 	virtual void execute() const = 0;
 
 protected:
-	Rotor* rotor;
+	rotor::Rotor* rotor;
 };
 
 } /* namespace commands */

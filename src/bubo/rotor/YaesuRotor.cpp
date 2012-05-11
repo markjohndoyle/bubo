@@ -4,10 +4,11 @@
  *  Created on: Mar 22, 2012
  *      Author: Mark Doyle
  */
-#include "bubo/YaesuRotor.hpp"
+#include "YaesuRotor.hpp"
 #include "utilEeprom/EEPROManything.hpp"
 
-using namespace bubo;
+namespace bubo {
+namespace rotor {
 
 /** Base address in EEPROM to determine if a config exists at address CONFIG_EEPROM_ADDRESS */
 const int YaesuRotor::CONFIG_STORED_FLAG = 0x01;
@@ -70,6 +71,14 @@ unsigned long YaesuRotor::getRotorMoveUpdateInterval() const {
 
 void YaesuRotor::setRotorMoveUpdateInterval(unsigned long rotorMoveUpdateInterval) {
 	this->rotorMoveUpdateInterval = rotorMoveUpdateInterval;
+}
+
+void YaesuRotor::setTargetAzimuth(long azimuth) {
+	targetAzimuth = azimuth;
+}
+
+void YaesuRotor::setTargetElevation(long elevation) {
+	targetElevation = elevation;
 }
 
 void YaesuRotor::rotate() {
@@ -183,3 +192,7 @@ int YaesuRotor::loadConfig() {
 	// read config from eeprom and overwrite current config
 	return EEPROM_readAnything(CONFIG_EEPROM_ADDRESS, config);
 }
+
+
+} /* namespace rotor */
+} /* namespace bubo */

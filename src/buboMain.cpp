@@ -8,7 +8,7 @@
 #include "Ethernet/Ethernet.h"
 #include "Ethernet/EthernetUdp.h"
 #include "LiquidCrystal_I2C/LiquidCrystal_I2C.h"
-#include "bubo/YaesuRotor.hpp"
+#include "bubo/rotor/YaesuRotor.hpp"
 #include "bubo/commanding/CommandProcessor.hpp"
 #include "bubo/TelemetryPayload.hpp"
 #include "bubo/RotorTelemetryProducer.hpp"
@@ -37,7 +37,7 @@ bubo::commanding::CommandProcessor tcpCommandProcessor(&commandServer);
 bubo::commanding::SerialCommandSource serialCommandServer;
 bubo::commanding::CommandProcessor serialCommandProcessor(&serialCommandServer);
 
-bubo::YaesuRotor rotorController;
+bubo::rotor::YaesuRotor rotorController;
 bubo::RotorTelemetryProducer tmProducer(&rotorController);
 
 void processCommands() {
@@ -224,7 +224,7 @@ void setup() {
 	// initialise serial port:
 	Serial.begin(9600);
 
-	rotorController = bubo::YaesuRotor();
+	rotorController = bubo::rotor::YaesuRotor();
 
 	commandServer.initCmdServer();
 
