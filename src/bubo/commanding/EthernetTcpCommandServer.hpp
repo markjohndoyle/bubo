@@ -36,11 +36,7 @@ public:
 	/** Returns the servers ip as a string */
 	String ipToString() const;
 
-	byte getByte();
-
-	const EthernetServer& getCommandServer() const {
-		return commandServer;
-	}
+	int getData();
 
 private:
 	/** the command server */

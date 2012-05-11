@@ -17,7 +17,7 @@ namespace commanding {
 class CommandSource {
 public:
 	virtual ~CommandSource() {};
-	virtual byte getByte() = 0;
+	virtual int getData() = 0;
 };
 
 } /* namespace commanding */

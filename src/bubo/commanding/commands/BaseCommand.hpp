@@ -25,6 +25,7 @@ public:
 
 	virtual void execute() const = 0;
 
+	virtual bool isComplete() const = 0;
 
 protected:
 	uint16_t numOfArgs;

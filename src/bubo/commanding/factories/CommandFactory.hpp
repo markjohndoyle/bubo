@@ -26,6 +26,8 @@ protected:
 	bubo::commanding::commands::BaseCommand* commandUnderConstruction;
 
 public:
+	CommandFactory() : commandUnderConstruction(0) {}
+
 	virtual ~CommandFactory() {}
 
 	/**

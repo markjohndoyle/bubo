@@ -10,31 +10,34 @@
 
 #include "CommandSource.hpp"
 #include "factories/CommandFactory.hpp"
-#include "factories/CommandFactoryListener.hpp"
+#include "factories/ObservableCommandFactory.hpp"
 
 namespace bubo {
+	namespace rotor {
+		class Rotor;
+	}  // namespace rotor
 namespace commanding {
 
 class CommandProcessor : public factories::CommandFactoryListener  {
 	public:
-		virtual ~CommandProcessor();
+		CommandProcessor(CommandSource* commandSource, rotor::Rotor* rotor);
 
-		CommandProcessor(CommandSource* commandSource);
+		virtual ~CommandProcessor();
 
 		void processCommands();
 
 		void commandComplete(commands::BaseCommand* command);
 
-		void commandFailed(commands::BaseCommand* command);
+		void commandFailed();
 
 	private:
 		CommandSource* cmdSource;
 
-		static const uint_fast8_t NUM_OF_FACTORIES = 2;
+		static const uint_fast8_t NUM_OF_FACTORIES = 1;
 
-		factories::CommandFactory* commandFactories[NUM_OF_FACTORIES];
+		factories::ObservableCommandFactory* commandFactories[NUM_OF_FACTORIES];
 
-		factories::CommandFactory* activeFactory;
+		factories::ObservableCommandFactory* activeFactory;
 
 		bool commandInConstruction;
 };

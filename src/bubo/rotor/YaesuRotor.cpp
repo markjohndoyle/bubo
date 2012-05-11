@@ -39,13 +39,13 @@ const long YaesuRotor::AZ_SCALE_FACTOR = 227;
 const long YaesuRotor::EL_SCALE_FACTOR = 568;
 
 
-YaesuRotor::YaesuRotor() : rotorMoveUpdateInterval(100UL), rotatingAzimuth(
-				false), rotatingElevation(false) {
+YaesuRotor::YaesuRotor()
+	: rotorMoveUpdateInterval(100UL), rotatingAzimuth(false), rotatingElevation(false) {
 
 	// Rotor config defaults
 	config.azimuthaAdZeroOffset = 0;
 	config.elevationAdZeroOffset = 0;
-	config.bias = 100;
+	config.bias = 25;
 
 	// Initialise digital pins for output.
 	pinMode(PIN_EL_UP, OUTPUT);
@@ -180,7 +180,7 @@ void YaesuRotor::updateAzimuth() {
 void YaesuRotor::updateElevation() {
 	long sensorValue = analogRead(PIN_EL_INPUT);
 //	Serial.print("VOLT: ");Serial.println(sensorValue);
-	currentElevation = (sensorValue * 10000) / EL_SCALE_FACTOR;
+	currentElevation = (sensorValue * 10000) / EL_SCALE_FACTOR - config.elevationAdZeroOffset;
 }
 
 int YaesuRotor::saveConfig() const {

@@ -15,6 +15,10 @@ using namespace rotor;
 
 YaesuCommandW::YaesuCommandW(Rotor* targetRotor)
 	: RotorCommand(targetRotor, 6), processedArgs(0) {
+	Serial.println("Instantiating YaesuCommandW!");
+}
+
+YaesuCommandW::~YaesuCommandW() {
 }
 
 bool YaesuCommandW::processArgument(byte arg) {
@@ -69,15 +73,20 @@ bool YaesuCommandW::processArgument(byte arg) {
 				break;
 			}
 	}
-
 	return result;
 }
 
 void YaesuCommandW::execute() const {
+	Serial.println(String(rotor->getCurrentAzimuth()) + ":" + String(rotor->getCurrentElevation()));
+	Serial.println("Executing YaesuCommandW - tarAz = " + String(azimuth) + " tarEz = " + String(elevation));
 	rotor->setTargetAzimuth(azimuth);
 	rotor->setTargetElevation(elevation);
 }
 
+
+bool YaesuCommandW::isComplete() const {
+	return (processedArgs == (numOfArgs));
+}
 
 } /* namespace commands */
 } /* namespace commanding */

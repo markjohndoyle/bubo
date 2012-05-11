@@ -14,8 +14,8 @@ SerialCommandSource::~SerialCommandSource() {
 
 }
 
-byte SerialCommandSource::getByte() {
-	byte inByte = -1;
+int SerialCommandSource::getData() {
+	int inByte = -1;
 	if(Serial.available() > 0) {
 		inByte = Serial.read();
 	}

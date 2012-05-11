@@ -24,6 +24,8 @@ public:
 
 	virtual bool commandSupported(char id) = 0;
 
+	void addListener(CommandFactoryListener* observer);
+
 private:
 	/**
 	 * The factory listener. Currently we only support one listener.

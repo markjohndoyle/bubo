@@ -22,8 +22,12 @@ void ObservableCommandFactory::commandComplete() {
 	commandUnderConstruction = 0;
 }
 
+void ObservableCommandFactory::addListener(CommandFactoryListener* observer) {
+	listener = observer;
+}
+
 void ObservableCommandFactory::commandConstructionFailed() {
-	this->listener->commandFailed(commandUnderConstruction);
+	this->listener->commandFailed();
 	commandUnderConstruction = 0;
 }
 

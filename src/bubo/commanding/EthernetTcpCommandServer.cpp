@@ -11,20 +11,25 @@ namespace commanding {
 
 using namespace network;
 
-EthernetTcpCommandServer::EthernetTcpCommandServer() :
-		commandServer(EthernetServer(23)) {
+EthernetTcpCommandServer::EthernetTcpCommandServer()
+	: commandServer(EthernetServer(23)) {
 }
 
-EthernetTcpCommandServer::EthernetTcpCommandServer(uint16_t serverPort) :
-		commandServer(EthernetServer(serverPort)) {
+EthernetTcpCommandServer::EthernetTcpCommandServer(uint16_t serverPort)
+	: commandServer(EthernetServer(serverPort)) {
 }
 
 EthernetTcpCommandServer::~EthernetTcpCommandServer() {
 }
 
 void EthernetTcpCommandServer::initCmdServer() {
-	if (Ethernet.begin(MAC) == 0) {
+	Serial.println("Initialising command server");
+	if (Ethernet.begin(MAC)) {
 		commandServer.begin();
+		Serial.println(ipToString());
+	}
+	else {
+		Serial.println("FAIL");
 	}
 }
 
@@ -39,17 +44,18 @@ String EthernetTcpCommandServer::ipToString() const {
 		ipStr += ip[thisByte];
 		ipStr += ".";
 	}
+
 	return ipStr;
 }
 
 /**
  * Implementation simply returns the next byte in the stream.
  */
-byte EthernetTcpCommandServer::getByte() {
-	byte byteIn = -1;
+int EthernetTcpCommandServer::getData() {
+	int byteIn = -1;
 	client = commandServer.available();
 	if (client) {
-		if (client.available() > 0) {
+		if (client.available() != -1) {
 			byteIn = client.read();
 		}
 	}

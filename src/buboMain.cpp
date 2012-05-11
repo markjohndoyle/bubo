@@ -31,19 +31,21 @@ String azRotorMovement; // string for az rotor move display
 String elRotorMovement; // string for el rotor move display
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // set the LCD address to 0x20 for a 16 chars and 2 line display
+
 bubo::telemetry::TelemetryServer tmServer;
-bubo::commanding::EthernetTcpCommandServer commandServer;
-bubo::commanding::CommandProcessor tcpCommandProcessor(&commandServer);
-bubo::commanding::SerialCommandSource serialCommandServer;
-bubo::commanding::CommandProcessor serialCommandProcessor(&serialCommandServer);
 
 bubo::rotor::YaesuRotor rotorController;
+
+bubo::commanding::EthernetTcpCommandServer commandServer;
+/** Ethernet command processor */
+bubo::commanding::CommandProcessor tcpCommandProcessor(&commandServer, &rotorController);
+
+bubo::commanding::SerialCommandSource serialCommandServer;
+/** Serial command processor */
+bubo::commanding::CommandProcessor serialCommandProcessor(&serialCommandServer, &rotorController);
+
 bubo::RotorTelemetryProducer tmProducer(&rotorController);
 
-void processCommands() {
-	tcpCommandProcessor.processCommands();
-	serialCommandProcessor.processCommands();
-}
 
 bool azLabelSet = false;
 bool elLabelSet = false;
@@ -178,6 +180,11 @@ bool checkForTmClient() {
 	return result;
 }
 
+void processCommands() {
+	tcpCommandProcessor.processCommands();
+	serialCommandProcessor.processCommands();
+}
+
 /**
  * MAIN EVENT LOOP
  *
@@ -206,7 +213,7 @@ void loop() {
 		rtcLastDisplayUpdate = elapsedTime;
 	}
 
-	outputTelemetry();
+//	outputTelemetry();
 
 	updateDisplay();
 }
@@ -223,6 +230,7 @@ void setup() {
 
 	// initialise serial port:
 	Serial.begin(9600);
+	Serial.println("Booting...");
 
 	rotorController = bubo::rotor::YaesuRotor();
 
@@ -235,6 +243,8 @@ void setup() {
 		lcd.setCursor(0, 1);
 //		lcd.print(ipToString());
 	}
+
+	Serial.println(String(rotorController.getCurrentAzimuth()) + ":" + String(rotorController.getCurrentElevation()));
 
 }
 

@@ -20,7 +20,7 @@ public:
 	virtual ~CommandFactoryListener() {};
 
 	virtual void commandComplete(commands::BaseCommand* command) = 0;
-	virtual void commandFailed(commands::BaseCommand* command) = 0 ;
+	virtual void commandFailed() = 0 ;
 };
 
 } /* namespace factories */

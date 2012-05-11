@@ -27,6 +27,8 @@ public:
 
 	virtual void execute() const = 0;
 
+	virtual bool isComplete() const = 0;
+
 protected:
 	rotor::Rotor* rotor;
 };

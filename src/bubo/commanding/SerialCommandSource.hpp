@@ -17,7 +17,7 @@ class SerialCommandSource : public CommandSource {
 public:
 	~SerialCommandSource();
 
-	byte getByte();
+	int getData();
 };
 
 } /* namespace commanding */

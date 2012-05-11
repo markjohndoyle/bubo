@@ -18,11 +18,13 @@ class YaesuCommandW : public RotorCommand {
 public:
 	YaesuCommandW(rotor::Rotor* targetRotor);
 
-	~YaesuCommandW();
+	virtual ~YaesuCommandW();
 
 	virtual bool processArgument(byte arg);
 
 	virtual void execute() const;
+
+	virtual bool isComplete() const;
 
 private:
 	long azimuth;
