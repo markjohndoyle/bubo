@@ -21,6 +21,8 @@ class Rotor {
 
 		virtual void setTargetAzimuth(long azimuth) = 0;
 		virtual void setTargetElevation(long elevation) = 0;
+
+		virtual void setBias(long newBias) = 0;
 };
 
 

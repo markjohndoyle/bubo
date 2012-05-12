@@ -183,6 +183,10 @@ void YaesuRotor::updateElevation() {
 	currentElevation = (sensorValue * 10000) / EL_SCALE_FACTOR - config.elevationAdZeroOffset;
 }
 
+void YaesuRotor::setBias(long newBias) {
+	this->config.bias = newBias;
+}
+
 int YaesuRotor::saveConfig() const {
 	// write config to eeprom
 	return EEPROM_writeAnything(CONFIG_EEPROM_ADDRESS, config);

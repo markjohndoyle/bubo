@@ -9,6 +9,7 @@
 #define BASECOMMAND_H_
 
 #include "Arduino.h"
+#include "map"
 
 namespace bubo {
 namespace commanding {
@@ -25,10 +26,16 @@ public:
 
 	virtual void execute() const = 0;
 
-	virtual bool isComplete() const = 0;
+	virtual const bool isComplete() const;
 
 protected:
 	uint16_t numOfArgs;
+
+	uint_fast8_t processedArgs;
+
+	map<uint_fast16_t, ArgumentProcessor> argumentProcessors;
+
+
 
 };
 

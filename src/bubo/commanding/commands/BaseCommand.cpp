@@ -11,10 +11,14 @@ namespace commanding {
 namespace commands {
 
 
-BaseCommand::BaseCommand(uint16_t numArgs) : numOfArgs(numArgs) {
+BaseCommand::BaseCommand(uint16_t numArgs) : numOfArgs(numArgs), processedArgs(0) {
 }
 
 BaseCommand::~BaseCommand() {
+}
+
+const bool BaseCommand::isComplete() const {
+	return (processedArgs == numOfArgs);
 }
 
 } /* namespace commands */

@@ -24,13 +24,9 @@ public:
 
 	virtual void execute() const;
 
-	virtual bool isComplete() const;
-
 private:
 	long azimuth;
 	long elevation;
-
-	uint_fast8_t processedArgs;
 };
 
 }

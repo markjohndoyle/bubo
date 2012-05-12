@@ -6,7 +6,6 @@
  */
 
 #include "RotorCommand.hpp"
-#include "bubo/rotor/Rotor.hpp"
 
 namespace bubo {
 namespace commanding {

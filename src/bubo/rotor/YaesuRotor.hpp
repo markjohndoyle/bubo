@@ -80,6 +80,8 @@ class YaesuRotor : public Rotor {
 
 		int loadConfig();
 
+		void setBias(long newBias);
+
 	private:
 		/** The start address in EEPROM of the rotorconfiguration */
 		static const int CONFIG_EEPROM_ADDRESS;
