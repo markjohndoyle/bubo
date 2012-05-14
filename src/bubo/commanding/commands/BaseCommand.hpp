@@ -9,7 +9,11 @@
 #define BASECOMMAND_H_
 
 #include "Arduino.h"
-#include "map"
+#include "argumentprocessors/ArgumentProcessor.hpp"
+
+#include <iterator>
+#include <vector>
+//#include <pnew.cpp>  // placement new implementation
 
 namespace bubo {
 namespace commanding {
@@ -26,16 +30,14 @@ public:
 
 	virtual void execute() const = 0;
 
-	virtual const bool isComplete() const;
+	const bool isComplete() const;
 
 protected:
 	uint16_t numOfArgs;
 
 	uint_fast8_t processedArgs;
 
-	map<uint_fast16_t, ArgumentProcessor> argumentProcessors;
-
-
+//	std::vector<ArgumentProcessor*> argumentProcessors;
 
 };
 

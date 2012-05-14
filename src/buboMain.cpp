@@ -10,8 +10,8 @@
 #include "LiquidCrystal_I2C/LiquidCrystal_I2C.h"
 #include "bubo/rotor/YaesuRotor.hpp"
 #include "bubo/commanding/CommandProcessor.hpp"
-#include "bubo/TelemetryPayload.hpp"
-#include "bubo/RotorTelemetryProducer.hpp"
+#include "bubo/telemetry/TelemetryPayload.hpp"
+#include "bubo/telemetry/RotorTelemetryProducer.hpp"
 #include "bubo/commanding/EthernetTcpCommandServer.hpp"
 #include "bubo/commanding/SerialCommandSource.hpp"
 #include "bubo/telemetry/TelemetryServer.hpp"
@@ -204,7 +204,7 @@ void loop() {
 		// update rotor movement if necessary
 		if (elapsedTime - rtcLastRotorUpdate > rotorMoveUpdateInterval) {
 			rtcLastRotorUpdate = elapsedTime;
-			rotorController.rotate();
+//			rotorController.rotate();
 		}
 	}
 	// rtc overflow - just in case

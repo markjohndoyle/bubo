@@ -143,14 +143,6 @@ class YaesuRotor : public Rotor {
 		void rotateElevation();
 
 		struct rotorConfig {
-			/**
-			 * A/D converter parameters
-			 * AFTER you have adjusted your G-5500 control box as per the manual
-			 * adjust the next 4 parameters. The settings interact a bit so you may have
-			 * to go back and forth a few times. Remember the G-5500 rotors are not all that
-			 * accurate (within 4 degrees at best) so try not to get too compulsive when
-			 * making these adjustments.
-			 */
 			/** adjust to zero out lcd az reading when control box az = 0 */
 			long azimuthaAdZeroOffset;
 			/** adjust to zero out lcd el reading when control box el = 0 */

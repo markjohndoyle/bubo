@@ -16,6 +16,7 @@ using namespace rotor;
 YaesuCommandW::YaesuCommandW(Rotor* targetRotor)
 	: RotorCommand(targetRotor, 6) {
 	Serial.println("Instantiating YaesuCommandW!");
+
 }
 
 YaesuCommandW::~YaesuCommandW() {
@@ -24,7 +25,7 @@ YaesuCommandW::~YaesuCommandW() {
 bool YaesuCommandW::processArgument(byte arg) {
 	bool result = false;
 
-	// FIXME magic numbers in here. Linked to implementation of the YaesuRotor class.
+	// FIXME magic numbers ASCII code numbers here. Just cast to int?
 	switch(processedArgs) {
 			// first azimuth character
 			case 0: {

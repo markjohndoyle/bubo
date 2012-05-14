@@ -30,13 +30,13 @@ const long YaesuRotor::MAX_ELEVATION = 18000L;
  * Coefficient used to convert the analogue azimuth voltage into a degrees based upon the
  * Arduino's 10-bit ADC and the Rotor's maximum azimuth range.
  */
-const long YaesuRotor::AZ_SCALE_FACTOR = 227;
+const long YaesuRotor::AZ_SCALE_FACTOR = 114;
 
 /**
  * Coefficient used to convert the analogue elevation voltage into a degrees based upon the
  * Arduino's 10-bit ADC and the Rotor's maximum elevation range.
  */
-const long YaesuRotor::EL_SCALE_FACTOR = 568;
+const long YaesuRotor::EL_SCALE_FACTOR = 284;
 
 
 YaesuRotor::YaesuRotor()
@@ -45,7 +45,7 @@ YaesuRotor::YaesuRotor()
 	// Rotor config defaults
 	config.azimuthaAdZeroOffset = 0;
 	config.elevationAdZeroOffset = 0;
-	config.bias = 25;
+	config.bias = 50;
 
 	// Initialise digital pins for output.
 	pinMode(PIN_EL_UP, OUTPUT);
@@ -174,12 +174,13 @@ void YaesuRotor::allStop() {
 
 void YaesuRotor::updateAzimuth() {
 	long sensorValue = analogRead(PIN_AZ_INPUT);
+	Serial.print("AZIMUTH VOLT: ");Serial.println(sensorValue);
 	currentAzimuth = ((sensorValue * 10000) / AZ_SCALE_FACTOR) - config.azimuthaAdZeroOffset;
 }
 
 void YaesuRotor::updateElevation() {
 	long sensorValue = analogRead(PIN_EL_INPUT);
-//	Serial.print("VOLT: ");Serial.println(sensorValue);
+	Serial.print("ELEVATION VOLT: ");Serial.println(sensorValue);
 	currentElevation = (sensorValue * 10000) / EL_SCALE_FACTOR - config.elevationAdZeroOffset;
 }
 

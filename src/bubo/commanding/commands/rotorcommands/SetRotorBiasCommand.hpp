@@ -25,7 +25,7 @@ public:
 	virtual void execute() const;
 
 private:
-	long bias;
+	uint16_t bias;
 };
 
 } /* namespace commands */
