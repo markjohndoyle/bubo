@@ -5,7 +5,7 @@
  *      Author: Mark Doyle
  *
  */
-#include "bubo/RotorTelemetryProducer.hpp"
+#include "bubo/telemetry/RotorTelemetryProducer.hpp"
 #include "bubo/rotor/Rotor.hpp"
 #include "Ethernet/util.h"
 

@@ -8,7 +8,7 @@
 #ifndef ROTORTELEMETRYPRODUCER_HPP_
 #define ROTORTELEMETRYPRODUCER_HPP_
 
-#include "bubo/TelemetryPayload.hpp"
+#include "bubo/telemetry/TelemetryPayload.hpp"
 
 namespace bubo {
 
