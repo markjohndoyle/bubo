@@ -11,15 +11,18 @@ namespace bubo {
 namespace commanding {
 namespace factories {
 
-ObservableCommandFactory::ObservableCommandFactory() {
+ObservableCommandFactory::ObservableCommandFactory()
+	: listener(0) {
 }
 
 ObservableCommandFactory::~ObservableCommandFactory() {
 }
 
 void ObservableCommandFactory::commandComplete() {
-	this->listener->commandComplete(commandUnderConstruction);
-	commandUnderConstruction = 0;
+	if(listener != 0) {
+		this->listener->commandComplete(commandUnderConstruction);
+		commandUnderConstruction = 0;
+	}
 }
 
 void ObservableCommandFactory::addListener(CommandFactoryListener* observer) {

@@ -10,6 +10,7 @@
 
 #include "Arduino.h"
 #include "Rotor.hpp"
+#include "bubo/PersistentSettings.hpp"
 
 namespace bubo {
 namespace rotor {
@@ -19,7 +20,7 @@ namespace rotor {
  * AZ or az = Azimuth
  * EL or el = Elevation
  */
-class YaesuRotor : public Rotor {
+class YaesuRotor : public Rotor, public PersistentSettings {
 	public:
 		YaesuRotor();
 		~YaesuRotor();
@@ -32,13 +33,9 @@ class YaesuRotor : public Rotor {
 
 		void setRotorMoveUpdateInterval(unsigned long newRotorMoveUpdateInterval);
 
-		long getCurrentAzimuth() const {
-			return currentAzimuth;
-		}
+		long getCurrentAzimuth();
 
-		long getCurrentElevation() const {
-			return currentElevation;
-		}
+		long getCurrentElevation();
 
 		long getTargetAzimuth() const {
 			return targetAzimuth;
@@ -76,11 +73,15 @@ class YaesuRotor : public Rotor {
 			return this->rotatingElevation;
 		}
 
-		int saveConfig() const;
+		void setBias(long newBias);
+
+		void setRotateAzimuth(AZIMUTH_ROTATE rotationState);
+
+		void setAzimuthZeroOffset(long offset);
 
 		int loadConfig();
 
-		void setBias(long newBias);
+		bool saveSettings();
 
 	private:
 		/** The start address in EEPROM of the rotorconfiguration */

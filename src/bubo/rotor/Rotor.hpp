@@ -14,15 +14,21 @@ namespace rotor {
 
 class Rotor {
 	public:
+		enum AZIMUTH_ROTATE {CLOCKWISE, ANTICLOCKWISE, STOP};
+
 		virtual ~Rotor() {};
 
-		virtual long getCurrentAzimuth() const = 0;
-		virtual long getCurrentElevation() const = 0;
+		virtual long getCurrentAzimuth() = 0;
+		virtual long getCurrentElevation() = 0;
 
 		virtual void setTargetAzimuth(long azimuth) = 0;
 		virtual void setTargetElevation(long elevation) = 0;
 
+		virtual void setRotateAzimuth(AZIMUTH_ROTATE rotationState) = 0;
+
 		virtual void setBias(long newBias) = 0;
+
+		virtual void setAzimuthZeroOffset(long offset) = 0;
 };
 
 

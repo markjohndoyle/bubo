@@ -17,17 +17,6 @@ BaseCommand::BaseCommand(uint16_t numArgs)
 BaseCommand::~BaseCommand() {
 }
 
-//bool BaseCommand::processArgument(byte arg) {
-//	ArgumentProcessor* argProc = argumentProcessors[processedArgs];
-//	if (argProc != 0) {
-//		return argProc->processArg(arg);
-//	}
-//	else {
-//		// No arg processors assumes all bytes are valid args for arg position "processedArgs"
-//		return true;
-//	}
-//}
-
 const bool BaseCommand::isComplete() const {
 	return (processedArgs == numOfArgs);
 }

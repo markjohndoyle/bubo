@@ -7,6 +7,8 @@
 
 #include "RotorCommandFactory.hpp"
 #include "bubo/commanding/commands/rotorcommands/YaesuCommandW.hpp"
+#include "bubo/commanding/commands/rotorcommands/SetRotorBiasCommand.hpp"
+#include "bubo/commanding/commands/rotorcommands/GetAzimuth.hpp"
 #include "bubo/rotor/Rotor.hpp"
 
 namespace bubo {
@@ -21,6 +23,12 @@ const int RotorCommandFactory::NUM_OF_COMMANDS;
 RotorCommandFactory::RotorCommandFactory(Rotor* targetRotor)
 	: rotor(targetRotor) {
 	commandIds[0] = 'w';
+	commandIds[1] = 'W';
+	commandIds[2] = 'b';
+	commandIds[3] = 'B';
+	commandIds[4] = 'c';
+	commandIds[5] = 'C';
+
 }
 
 RotorCommandFactory::~RotorCommandFactory() {
@@ -32,6 +40,7 @@ void RotorCommandFactory::buildCommand(byte data) {
 	if (!commandUnderConstruction == 0) {
 		bool ok = commandUnderConstruction->processArgument(data);
 		if (!ok) {
+			Serial.println("Argument data " + String((char)data) + " invalid, command failed");
 			commandConstructionFailed();
 			delete commandUnderConstruction;
 			commandUnderConstruction = 0;
@@ -58,6 +67,12 @@ void RotorCommandFactory::instantiateConcreteCommand(char id) {
 	if (id == 'w' || id == 'W') {
 		commandUnderConstruction = new YaesuCommandW(rotor);
 	}
+	else if (id == 'b' || id == 'B') {
+		commandUnderConstruction = new SetRotorBiasCommand(rotor);
+	}
+	else if (id == 'c' || id == 'C') {
+		commandUnderConstruction = new GetAzimuth(rotor);
+	}
 }
 
 bool RotorCommandFactory::commandSupported(char id) {
@@ -66,12 +81,19 @@ bool RotorCommandFactory::commandSupported(char id) {
 	for (int i = 0; i < NUM_OF_COMMANDS; i++) {
 		char supportedId = commandIds[i];
 		if (supportedId == id) {
-			instantiateConcreteCommand(id);
 			result = true;
 			break;
 		}
 	}
 	return result;
+}
+
+void RotorCommandFactory::constructCommand(char id) {
+	instantiateConcreteCommand(id);
+	if(commandUnderConstruction->isComplete()){
+		Serial.println("Command complete");
+		commandComplete();
+	}
 }
 
 } /* namespace factories */

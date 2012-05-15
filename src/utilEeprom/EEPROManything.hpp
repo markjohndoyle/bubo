@@ -11,7 +11,9 @@
 #include "EEPROM/EEPROM.h"
 
 
-template<class T> int EEPROM_writeAnything(int eepromStartAddress, const T& value) {
+template<class T>
+int EEPROM_writeAnything(const int address, const T& value) {
+	int eepromStartAddress = address;
 	const byte* p = (const byte*) (const void*) &value;
 	unsigned int i;
 	for (i = 0; i < sizeof(value); i++) {
@@ -20,7 +22,8 @@ template<class T> int EEPROM_writeAnything(int eepromStartAddress, const T& valu
 	return i;
 }
 
-template<class T> int EEPROM_readAnything(int eepromStartAddress, T& value) {
+template<class T>
+int EEPROM_readAnything(int eepromStartAddress, T& value) {
 	byte* p = (byte*) (void*) &value;
 	unsigned int i;
 	for (i = 0; i < sizeof(value); i++) {

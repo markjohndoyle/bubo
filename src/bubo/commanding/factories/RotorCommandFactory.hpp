@@ -27,8 +27,10 @@ public:
 
 	bool commandSupported(char id);
 
+	void constructCommand(char id);
+
 private:
-	static const int NUM_OF_COMMANDS = 1;
+	static const int NUM_OF_COMMANDS = 6;
 
 	char commandIds[NUM_OF_COMMANDS];
 

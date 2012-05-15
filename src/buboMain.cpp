@@ -21,7 +21,6 @@ long previousRotorElevation = 0L; // previous rotor azimuth in degrees * 100
 
 unsigned long rtcLastDisplayUpdate = 0UL; // rtc at start of last loop
 unsigned long rtcLastRotorUpdate = 0UL; // rtc at start of last loop
-unsigned long displayUpdateInterval = 500UL; // display update interval in mS
 unsigned long rotorMoveUpdateInterval = 100UL; // rotor move check interval in mS
 
 boolean azimuthMove = false; // azimuth move needed

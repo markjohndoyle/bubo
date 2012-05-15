@@ -16,7 +16,6 @@ using namespace rotor;
 YaesuCommandW::YaesuCommandW(Rotor* targetRotor)
 	: RotorCommand(targetRotor, 6) {
 	Serial.println("Instantiating YaesuCommandW!");
-
 }
 
 YaesuCommandW::~YaesuCommandW() {

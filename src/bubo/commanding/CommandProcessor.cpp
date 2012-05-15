@@ -49,6 +49,7 @@ void CommandProcessor::processCommands() {
 					activeFactory = commandFactories[i];
 					activeFactory->addListener(this);
 					commandInConstruction = true;
+					activeFactory->constructCommand(inByte);
 					break;
 				}
 				else {
@@ -65,6 +66,7 @@ void CommandProcessor::processCommands() {
 
 
 void CommandProcessor::commandComplete(commands::BaseCommand* command) {
+	Serial.println("Command executing....");
 	commandInConstruction = false;
 	command->execute();
 	delete command;

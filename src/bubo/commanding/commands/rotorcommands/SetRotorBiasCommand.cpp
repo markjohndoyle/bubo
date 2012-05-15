@@ -15,7 +15,7 @@ namespace commands {
 using namespace rotor;
 
 SetRotorBiasCommand::SetRotorBiasCommand(Rotor* targetRotor)
-	: RotorCommand(targetRotor, 3) {
+	: RotorCommand(targetRotor, 3), bias(0) {
 }
 
 SetRotorBiasCommand::~SetRotorBiasCommand() {
@@ -28,21 +28,28 @@ void SetRotorBiasCommand::execute() const {
 bool SetRotorBiasCommand::processArgument(byte arg) {
 	bool result = false;
 
+	// Get int value of ASCII numeric char.
 	int8_t intValue = arg - 48;
 
 	switch(processedArgs) {
 		case 0: {
 			// push value up 10^2
 			bias += intValue * 100;
+			processedArgs++;
+			result = true;
 			break;
 		}
 		case 1: {
 			// push next byte up 10^1 and add to bias
-			bias += intValue + 10;
+			bias += intValue * 10;
+			processedArgs++;
+			result = true;
 			break;
 		}
 		case 2: {
 			bias += intValue;
+			processedArgs++;
+			result = true;
 			break;
 		}
 	}

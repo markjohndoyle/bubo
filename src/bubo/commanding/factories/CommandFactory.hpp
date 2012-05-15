@@ -41,6 +41,8 @@ public:
 	 */
 	virtual bool commandSupported(char id) = 0;
 
+	virtual void constructCommand(char id) = 0;
+
 };
 
 } /* namespace factories */

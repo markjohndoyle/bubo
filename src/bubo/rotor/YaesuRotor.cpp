@@ -45,7 +45,7 @@ YaesuRotor::YaesuRotor()
 	// Rotor config defaults
 	config.azimuthaAdZeroOffset = 0;
 	config.elevationAdZeroOffset = 0;
-	config.bias = 50;
+	config.bias = 5;
 
 	// Initialise digital pins for output.
 	pinMode(PIN_EL_UP, OUTPUT);
@@ -86,6 +86,7 @@ void YaesuRotor::rotate() {
 	// get current azimuth from G-5500
 	updateAzimuth();
 	// see if azimuth move is required
+	Serial.println("Bias = " + String(config.bias));
 	if ((abs(currentAzimuth - targetAzimuth) > config.bias)) {
 //			updateAzimuthMove();
 		rotateAzimuth();
@@ -188,15 +189,58 @@ void YaesuRotor::setBias(long newBias) {
 	this->config.bias = newBias;
 }
 
-int YaesuRotor::saveConfig() const {
-	// write config to eeprom
-	return EEPROM_writeAnything(CONFIG_EEPROM_ADDRESS, config);
+void YaesuRotor::setAzimuthZeroOffset(long offset) {
+	config.azimuthaAdZeroOffset = offset;
+}
+
+void YaesuRotor::setRotateAzimuth(AZIMUTH_ROTATE rotationState) {
+	switch(rotationState) {
+		case CLOCKWISE: {
+			digitalWrite(PIN_AZ_LEFT, LOW);
+			digitalWrite(PIN_AZ_RIGHT, HIGH);
+			rotatingAzimuth = true;
+			break;
+		}
+		case ANTICLOCKWISE: {
+			digitalWrite(PIN_AZ_LEFT, HIGH);
+			digitalWrite(PIN_AZ_RIGHT, LOW);
+			rotatingAzimuth = true;
+			break;
+		}
+		case STOP: {
+			digitalWrite(PIN_AZ_LEFT, LOW);
+			digitalWrite(PIN_AZ_RIGHT, LOW);
+			rotatingAzimuth = false;
+			break;
+		}
+	}
+}
+
+bool YaesuRotor::saveSettings() {
+	bool result = false;
+	unsigned int bytesWritten = EEPROM_writeAnything(CONFIG_EEPROM_ADDRESS, config);
+//	if(bytesWritten == sizeof(config)) {
+//		result = true;
+//	}
+	return result;
 }
 
 int YaesuRotor::loadConfig() {
 	// read config from eeprom and overwrite current config
-	return EEPROM_readAnything(CONFIG_EEPROM_ADDRESS, config);
+	return EEPROM_readAnything<rotorConfig>(CONFIG_EEPROM_ADDRESS, config);
 }
+
+long YaesuRotor::getCurrentAzimuth() {
+	updateAzimuth();
+	return currentAzimuth;
+}
+
+
+long YaesuRotor::getCurrentElevation() {
+	updateElevation();
+	return currentElevation;
+}
+
 
 
 } /* namespace rotor */
