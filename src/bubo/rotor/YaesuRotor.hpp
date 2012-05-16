@@ -143,10 +143,10 @@ class YaesuRotor : public Rotor, public PersistentSettings {
 
 		void rotateElevation();
 
-		static const int ADC_MIN_ROTOR = 409;
-		static const int ADC_MAX_ROTOR = 921;
-		static const int MAX_ROTOR_AZ = 450;
-		static const int MAX_ROTOR_EL = 180;
+		static const double ADC_MIN_ROTOR = 409.0;
+		static const double ADC_MAX_ROTOR = 921.0;
+		static const double MAX_ROTOR_AZ = 450.0;
+		static const double MAX_ROTOR_EL = 180.0;
 
 		struct rotorConfig {
 			/** adjust to zero out lcd az reading when control box az = 0 */
