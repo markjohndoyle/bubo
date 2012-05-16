@@ -149,7 +149,7 @@ class YaesuRotor : public Rotor, public PersistentSettings {
 		static const double MAX_ROTOR_EL = 180.0;
 
 		struct rotorConfig {
-			const byte configPresentFlag;
+			byte configPresentFlag;
 			/** adjust to zero out lcd az reading when control box az = 0 */
 			long azimuthaAdZeroOffset;
 			/** adjust to zero out lcd el reading when control box el = 0 */

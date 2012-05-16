@@ -248,15 +248,12 @@ bool YaesuRotor::saveSettings() {
 	else {
 		// write failed, try and reset the config save flag just in case that was written.
 		// this prevents future load calls from trying to load an undefined config.
-		if(EEPROM.write(CONFIG_EEPROM_ADDRESS, 0x00) != 1) {
-			Serial.println("Serious EEPROM error");
-			// TODO Set a flag to prevent saving and loading in the future?
-		}
+		EEPROM.write(CONFIG_EEPROM_ADDRESS, 0x00);
 	}
 	return result;
 }
 
-int YaesuRotor::loadSettings() {
+bool YaesuRotor::loadSettings() {
 	bool result = false;
 	rotorConfig loadedConfig;
 	// Check first byte for saved config flag
@@ -266,7 +263,7 @@ int YaesuRotor::loadSettings() {
 	if(readByte == 0xFF) {
 		// read config from eeprom and overwrite current config
 		int bytesRead = EEPROM_readAnything<rotorConfig>(CONFIG_EEPROM_ADDRESS, loadedConfig);
-		if(bytesWritten == sizeof(rotorConfig)) {
+		if(bytesRead == sizeof(rotorConfig)) {
 			config = loadedConfig;
 			result = true;
 		}

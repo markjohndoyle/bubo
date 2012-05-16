@@ -212,7 +212,7 @@ void loop() {
 		rtcLastDisplayUpdate = elapsedTime;
 	}
 
-//	outputTelemetry();
+	outputTelemetry();
 
 	updateDisplay();
 }
