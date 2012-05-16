@@ -41,5 +41,14 @@ bool EthernetUdpTmChannel::loadSettings() {
 	// TODO implement method
 }
 
+
+void EthernetUdpTmChannel::setBroadcastAddress(IPAddress newAddress) {
+	config.broadcastAddress = newAddress;
+}
+
+void EthernetUdpTmChannel::setBroadcastPort(uint16_t newPort) {
+	config.broadcastPort = newPort;
+}
+
 }/* namespace telemetry */
 } /* namespace bubo */

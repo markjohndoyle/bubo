@@ -29,6 +29,10 @@ public:
 
 	bool loadSettings();
 
+	void setBroadcastAddress(IPAddress newAddress);
+
+	void setBroadcastPort(uint16_t newPort);
+
 private:
 	/** The UDP sender and receiver */
 	EthernetUDP udp;
