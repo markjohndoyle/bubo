@@ -28,7 +28,7 @@ RotorTelemetryProducer::RotorTelemetryProducer(vector<TelemetryOutputChannel*> t
 	outputChannels = tmOutputChannels;
 }
 
-TelemetryPayload RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
+TelemetryPayload* RotorTelemetryProducer::produceTelemetry(TM_TYPE type) const {
 	long azimuth = -9999;
 	long elevation = -9999;
 	uint_fast8_t id = 0;
@@ -71,7 +71,16 @@ TelemetryPayload RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
 		Serial.println("Failed to allocate bytes for TM");
 	}
 
-	return bubo::telemetry::TelemetryPayload(bytes, 9, id);
+	return new TelemetryPayload(bytes, 9, id);
+}
+
+void RotorTelemetryProducer::sendTelemetry(TM_TYPE type) const {
+	TelemetryPayload* payload = produceTelemetry(type);
+	for(int i = 0; i < outputChannels.size(); i++) {
+		outputChannels[i]->output(payload);
+	}
+
+	delete payload;
 }
 
 } /* namespace telemetry */

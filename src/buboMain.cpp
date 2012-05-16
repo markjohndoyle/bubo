@@ -124,45 +124,10 @@ void updateDisplay() {
 	}
 }
 
-long previousAz = -99999;
 void outputTelemetry() {
-	bubo::telemetry::TelemetryPayload azTmPayload = tmProducer.produceTelemetry(bubo::telemetry::RotorTelemetryProducer::POSITION);
-	IPAddress broadcast(192, 168, 0, 255);
-	int check = tmServer.getUdp().beginPacket(broadcast, 4023);
-	if(check != 1) {
-		Serial.println("[ERROR] - Could not create UDP packet with supplied remote ip and port");
-		return;
-	}
-	tmServer.getUdp().write(azTmPayload.getPayload(), azTmPayload.getSize());
-	tmServer.getUdp().endPacket();
+	tmProducer.sendTelemetry(bubo::telemetry::RotorTelemetryProducer::POSITION);
 }
 
-bool checkForTmClient() {
-	bool result = false;
-	char packetBuffer[UDP_TX_PACKET_MAX_SIZE]; //buffer to hold incoming packet,
-	int packetSize = tmServer.getUdp().parsePacket();
-	if (tmServer.getUdp().available()) {
-		Serial.print("Received packet of size ");
-		Serial.println(packetSize);
-		Serial.print("From ");
-		IPAddress remote = tmServer.getUdp().remoteIP();
-		for (int i = 0; i < 4; i++) {
-			Serial.print(remote[i], DEC);
-			if (i < 3) {
-				Serial.print(".");
-			}
-		}
-		Serial.print(", port ");
-		Serial.println(tmServer.getUdp().remotePort());
-
-		// read the packet into packetBufffer
-		tmServer.getUdp().read(packetBuffer, UDP_TX_PACKET_MAX_SIZE);
-		Serial.println("Contents:");
-		Serial.println(packetBuffer);
-		result = true;
-	}
-	return result;
-}
 
 void processCommands() {
 	tcpCommandProcessor.processCommands();
@@ -175,6 +140,8 @@ void processCommands() {
  * States:
  * 		1. Command phase.
  * 		2. Rotate phase.
+ * 		3. Output telemetry
+ * 		4. Update display
  */
 void loop() {
 	processCommands();

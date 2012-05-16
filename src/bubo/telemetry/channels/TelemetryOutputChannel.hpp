@@ -17,6 +17,10 @@ class TelemetryOutputChannel {
 	public:
 		virtual ~TelemetryOutputChannel() {};
 
+		/**
+		 * Send the telemetry payload using your chosen method.
+		 * for example, as ascii over serial, in a udp packet, egal!
+		 */
 		virtual void output(const TelemetryPayload* const tmPayload) = 0;
 };
 

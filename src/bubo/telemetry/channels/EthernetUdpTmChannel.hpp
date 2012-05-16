@@ -11,26 +11,23 @@
 #include "Ethernet/EthernetUdp.h"
 #include "bubo/network/BuboEthernet.hpp"
 #include "TelemetryOutputChannel.hpp"
+#include "bubo/PersistentSettings.hpp"
 
 namespace bubo {
 namespace telemetry {
 
 class TelemetryPayload;
 
-class EthernetUdpTmChannel : public network::BuboEthernet, public TelemetryOutputChannel {
+class EthernetUdpTmChannel : public network::BuboEthernet, public TelemetryOutputChannel, public PersistentSettings {
 public:
 	EthernetUdpTmChannel();
 	virtual ~EthernetUdpTmChannel();
 
 	void output(const TelemetryPayload* const tmPayload);
 
-	EthernetUDP getUdp() const {
-		return udp;
-	}
+	bool saveSettings();
 
-	const uint16_t getUdpServerPort() const {
-		return udpServerPort;
-	}
+	bool loadSettings();
 
 private:
 	/** The UDP sender and receiver */
@@ -38,6 +35,11 @@ private:
 
 	/** Port the UDP listens for UDP client packets on */
 	const uint16_t udpServerPort;
+
+	struct udpTmChannelConfig {
+		IPAddress broadcastAddress;
+		uint16_t broadcastPort;
+	} config;
 
 };
 
