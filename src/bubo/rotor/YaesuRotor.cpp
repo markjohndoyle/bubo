@@ -187,9 +187,9 @@ void YaesuRotor::updateAzimuth() {
 	// b = 921 i.e. highest analogue value
 	// c = 0 i.e. lowest degree 0 so can remove from equation
 	// d = 450 i.e. highest degree
-	double azimuth = (sensorValue - ADC_MIN_ROTOR) / (ADC_MAX_ROTOR - ADC_MIN_ROTOR) * MAX_ROTOR_AZ;
+	double azimuth = ((double)sensorValue - (double)ADC_MIN_ROTOR) / ((double)ADC_MAX_ROTOR - (double)ADC_MIN_ROTOR) * (double)MAX_ROTOR_AZ;
 	Serial.print("AZIMUTH: ");Serial.println(azimuth);
-	currentAzimuth = long(azimuth) * 10000;
+	currentAzimuth = azimuth * 10000;
 }
 
 void YaesuRotor::updateElevation() {
