@@ -249,7 +249,7 @@ bool YaesuRotor::saveSettings() {
 		// write failed, try and reset the config save flag just in case that was written.
 		// this prevents future load calls from trying to load an undefined config.
 		if(EEPROM.write(CONFIG_EEPROM_ADDRESS, 0x00) != 1) {
-			Serial.println("SErious EEPROM error");
+			Serial.println("Serious EEPROM error");
 			// TODO Set a flag to prevent saving and loading in the future?
 		}
 	}
