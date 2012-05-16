@@ -29,6 +29,7 @@ bool GetAzimuth::processArgument(byte arg) {
 
 void GetAzimuth::execute() const {
 	long azimuth = rotor->getCurrentAzimuth();
+	Serial.print("AZIMUTH DEGREES: ");Serial.println(azimuth);
 	String a(azimuth);
 	String out = "+0" + a; // FIXME
 	Serial.println(out);

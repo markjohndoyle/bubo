@@ -30,7 +30,7 @@ const long YaesuRotor::MAX_ELEVATION = 18000L;
  * Coefficient used to convert the analogue azimuth voltage into a degrees based upon the
  * Arduino's 10-bit ADC and the Rotor's maximum azimuth range.
  */
-const long YaesuRotor::AZ_SCALE_FACTOR = 114;
+const long YaesuRotor::AZ_SCALE_FACTOR = 98;
 
 /**
  * Coefficient used to convert the analogue elevation voltage into a degrees based upon the
@@ -42,10 +42,12 @@ const long YaesuRotor::EL_SCALE_FACTOR = 284;
 YaesuRotor::YaesuRotor()
 	: rotorMoveUpdateInterval(100UL), rotatingAzimuth(false), rotatingElevation(false) {
 
+	// TODO check for saved config
+
 	// Rotor config defaults
 	config.azimuthaAdZeroOffset = 0;
 	config.elevationAdZeroOffset = 0;
-	config.bias = 5;
+	config.bias = 90;
 
 	// Initialise digital pins for output.
 	pinMode(PIN_EL_UP, OUTPUT);
@@ -174,15 +176,35 @@ void YaesuRotor::allStop() {
 }
 
 void YaesuRotor::updateAzimuth() {
-	long sensorValue = analogRead(PIN_AZ_INPUT);
+	int sensorValue = analogRead(PIN_AZ_INPUT);
 	Serial.print("AZIMUTH VOLT: ");Serial.println(sensorValue);
-	currentAzimuth = ((sensorValue * 10000) / AZ_SCALE_FACTOR) - config.azimuthaAdZeroOffset;
+//	currentAzimuth = ((sensorValue * 10000) / AZ_SCALE_FACTOR) + config.azimuthaAdZeroOffset;
+	// y = (x-a)/(b-a) * (d-c) + c
+	// Where
+	// x = sensor value
+	// y = angle
+	// a = 409 i.e. lowest analogue value
+	// b = 921 i.e. highest analogue value
+	// c = 0 i.e. lowest degree 0 so can remove from equation
+	// d = 450 i.e. highest degree
+	double azimuth = (sensorValue - ADC_MIN_ROTOR) / (ADC_MAX_ROTOR - ADC_MIN_ROTOR) * MAX_ROTOR_AZ;
+	Serial.print("AZIMUTH: ");Serial.println(azimuth);
+	currentAzimuth = long(azimuth) * 10000;
 }
 
 void YaesuRotor::updateElevation() {
-	long sensorValue = analogRead(PIN_EL_INPUT);
+	int sensorValue = analogRead(PIN_EL_INPUT);
 	Serial.print("ELEVATION VOLT: ");Serial.println(sensorValue);
-	currentElevation = (sensorValue * 10000) / EL_SCALE_FACTOR - config.elevationAdZeroOffset;
+//	currentElevation = (sensorValue * 10000) / EL_SCALE_FACTOR + config.elevationAdZeroOffset;
+	// y = (x-a)/(b-a) * (d-c) + c
+	// Where
+	// x = sensor value
+	// y = angle
+	// a = 409 i.e. lowest analogue value
+	// b = 921 i.e. highest analogue value
+	// c = 0 i.e. lowest degree 0 so can remove from equation
+	// d = 180 i.e. highest degree
+	currentElevation = (sensorValue - ADC_MIN_ROTOR) / (ADC_MAX_ROTOR - ADC_MIN_ROTOR) * MAX_ROTOR_EL;
 }
 
 void YaesuRotor::setBias(long newBias) {
@@ -219,9 +241,9 @@ void YaesuRotor::setRotateAzimuth(AZIMUTH_ROTATE rotationState) {
 bool YaesuRotor::saveSettings() {
 	bool result = false;
 	unsigned int bytesWritten = EEPROM_writeAnything(CONFIG_EEPROM_ADDRESS, config);
-//	if(bytesWritten == sizeof(config)) {
-//		result = true;
-//	}
+	if(bytesWritten == sizeof(config)) {
+		result = true;
+	}
 	return result;
 }
 
