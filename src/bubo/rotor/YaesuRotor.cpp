@@ -45,6 +45,7 @@ YaesuRotor::YaesuRotor()
 	// TODO check for saved config
 
 	// Rotor config defaults
+	config.configPresentFlag = 0xFF;
 	config.azimuthaAdZeroOffset = 0;
 	config.elevationAdZeroOffset = 0;
 	config.bias = 90;
@@ -241,15 +242,37 @@ void YaesuRotor::setRotateAzimuth(AZIMUTH_ROTATE rotationState) {
 bool YaesuRotor::saveSettings() {
 	bool result = false;
 	unsigned int bytesWritten = EEPROM_writeAnything(CONFIG_EEPROM_ADDRESS, config);
-	if(bytesWritten == sizeof(config)) {
+	if(bytesWritten == sizeof(rotorConfig)) {
 		result = true;
+	}
+	else {
+		// write failed, try and reset the config save flag just in case that was written.
+		// this prevents future load calls from trying to load an undefined config.
+		if(EEPROM.write(CONFIG_EEPROM_ADDRESS, 0x00) != 1) {
+			Serial.println("SErious EEPROM error");
+			// TODO Set a flag to prevent saving and loading in the future?
+		}
 	}
 	return result;
 }
 
-int YaesuRotor::loadConfig() {
-	// read config from eeprom and overwrite current config
-	return EEPROM_readAnything<rotorConfig>(CONFIG_EEPROM_ADDRESS, config);
+int YaesuRotor::loadSettings() {
+	bool result = false;
+	rotorConfig loadedConfig;
+	// Check first byte for saved config flag
+	uint8_t readByte = EEPROM.read(CONFIG_EEPROM_ADDRESS);
+
+	// if we have a saved config read it in and load it into rotor config
+	if(readByte == 0xFF) {
+		// read config from eeprom and overwrite current config
+		int bytesRead = EEPROM_readAnything<rotorConfig>(CONFIG_EEPROM_ADDRESS, loadedConfig);
+		if(bytesWritten == sizeof(rotorConfig)) {
+			config = loadedConfig;
+			result = true;
+		}
+	}
+
+	return result;
 }
 
 long YaesuRotor::getCurrentAzimuth() {

@@ -13,6 +13,8 @@ namespace bubo {
 class PersistentSettings {
 	public:
 		virtual bool saveSettings() = 0;
+
+		virtual bool loadSettings() = 0;
 };
 
 } /* namespace bubo */
