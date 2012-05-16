@@ -11,6 +11,7 @@
 #include "Arduino.h"
 
 namespace bubo {
+namespace telemetry {
 
 class TelemetryPayload {
 	public:
@@ -43,6 +44,8 @@ class TelemetryPayload {
 		byte* payload;
 		size_t size;
 };
-}
+
+} /* namespace telemetry */
+} /* namespace bubo */
 
 #endif /* TELEMETRYPAYLOAD_HPP_ */

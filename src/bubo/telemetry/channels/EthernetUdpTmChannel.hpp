@@ -10,15 +10,19 @@
 
 #include "Ethernet/EthernetUdp.h"
 #include "bubo/network/BuboEthernet.hpp"
+#include "TelemetryOutputChannel.hpp"
 
 namespace bubo {
 namespace telemetry {
 
+class TelemetryPayload;
 
-class TelemetryServer : public bubo::network::BuboEthernet {
+class EthernetUdpTmChannel : public network::BuboEthernet, public TelemetryOutputChannel {
 public:
-	TelemetryServer();
-	virtual ~TelemetryServer();
+	EthernetUdpTmChannel();
+	virtual ~EthernetUdpTmChannel();
+
+	void output(const TelemetryPayload* const tmPayload);
 
 	EthernetUDP getUdp() const {
 		return udp;

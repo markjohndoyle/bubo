@@ -8,19 +8,23 @@
 #ifndef ROTORTELEMETRYPRODUCER_HPP_
 #define ROTORTELEMETRYPRODUCER_HPP_
 
-#include "bubo/telemetry/TelemetryPayload.hpp"
+#include "TelemetryPayload.hpp"
+#include "channels/TelemetryOutputChannel.hpp"
+#include <iterator> // must declare iterator befre vector in avr-stl
+#include <vector>
 
 namespace bubo {
-
 namespace rotor {
 	class Rotor;
 }
+namespace telemetry {
 
 class RotorTelemetryProducer {
 	public:
 		enum TM_TYPE { POSITION };
 
-		RotorTelemetryProducer(rotor::Rotor* rotorInterface);
+		RotorTelemetryProducer(TelemetryOutputChannel* tmOutputChannel, rotor::Rotor* rotorInterface);
+		RotorTelemetryProducer(std::vector<TelemetryOutputChannel*> tmOutputChannels, rotor::Rotor* rotorInterface);
 
 		TelemetryPayload produceTelemetry(TM_TYPE type);
 
@@ -28,8 +32,11 @@ class RotorTelemetryProducer {
 		rotor::Rotor* rotor;
 
 		static const uint8_t LAYOUT_ID_POSITION;
+
+		std::vector<TelemetryOutputChannel*> outputChannels;
 };
 
-}
+} /* namespace telemetry */
+} /* namespace bubo */
 
 #endif /* ROTORTELEMETRYPRODUCER_HPP_ */

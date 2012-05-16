@@ -8,21 +8,31 @@
 #include "bubo/telemetry/RotorTelemetryProducer.hpp"
 #include "bubo/rotor/Rotor.hpp"
 #include "Ethernet/util.h"
+#include <pnew.cpp>  // placement new implementation
 
 namespace bubo {
+namespace telemetry {
 
 using namespace rotor;
+using namespace std;
 
 const uint8_t RotorTelemetryProducer::LAYOUT_ID_POSITION = 1;
 
-RotorTelemetryProducer::RotorTelemetryProducer(Rotor* rotorInterface) : rotor(rotorInterface) {
+RotorTelemetryProducer::RotorTelemetryProducer(TelemetryOutputChannel* tmOutputChannel, Rotor* targetRotor)
+	: rotor(targetRotor) {
+	outputChannels.push_back(tmOutputChannel);
+}
+
+RotorTelemetryProducer::RotorTelemetryProducer(vector<TelemetryOutputChannel*> tmOutputChannels, Rotor* targetRotor)
+	: rotor(targetRotor) {
+	outputChannels = tmOutputChannels;
 }
 
 TelemetryPayload RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
 	long azimuth = -9999;
 	long elevation = -9999;
 	uint_fast8_t id = 0;
-	switch(type) {
+	switch (type) {
 		case POSITION:
 			azimuth = rotor->getCurrentAzimuth();
 			elevation = rotor->getCurrentElevation();
@@ -30,14 +40,8 @@ TelemetryPayload RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
 			break;
 	}
 
-//	Serial.println(azimuth);
-//	Serial.println(elevation);
-
-//	azimuth = htonl(azimuth);
-//	elevation = htonl(elevation);
-
 	unsigned long int payloadSize = (sizeof(long) * 2) + sizeof(uint_fast8_t);
-	byte* const bytes = (byte*) (malloc(payloadSize));
+	byte* const bytes = (byte*) ((malloc(payloadSize)));
 	if (bytes != NULL) {
 		bytes[0] = id;
 		bytes[1] = azimuth;
@@ -67,7 +71,8 @@ TelemetryPayload RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
 		Serial.println("Failed to allocate bytes for TM");
 	}
 
-	return bubo::TelemetryPayload(bytes, 9, id);
+	return bubo::telemetry::TelemetryPayload(bytes, 9, id);
 }
 
+} /* namespace telemetry */
 } /* namespace bubo */

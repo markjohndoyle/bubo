@@ -14,24 +14,15 @@
 #include "bubo/telemetry/RotorTelemetryProducer.hpp"
 #include "bubo/commanding/EthernetTcpCommandServer.hpp"
 #include "bubo/commanding/SerialCommandSource.hpp"
-#include "bubo/telemetry/TelemetryServer.hpp"
-
-long previousRotorAzimuth = 0L; // previous rotor azimuth in degrees * 100
-long previousRotorElevation = 0L; // previous rotor azimuth in degrees * 100
+#include "bubo/telemetry/channels/EthernetUdpTmChannel.hpp"
 
 unsigned long rtcLastDisplayUpdate = 0UL; // rtc at start of last loop
 unsigned long rtcLastRotorUpdate = 0UL; // rtc at start of last loop
 unsigned long rotorMoveUpdateInterval = 100UL; // rotor move check interval in mS
 
-boolean azimuthMove = false; // azimuth move needed
-boolean elevationMove = false; // elevation move needed
-
-String azRotorMovement; // string for az rotor move display
-String elRotorMovement; // string for el rotor move display
-
 LiquidCrystal_I2C lcd(0x27, 16, 2);  // set the LCD address to 0x20 for a 16 chars and 2 line display
 
-bubo::telemetry::TelemetryServer tmServer;
+bubo::telemetry::EthernetUdpTmChannel tmServer;
 
 bubo::rotor::YaesuRotor rotorController;
 
@@ -43,7 +34,8 @@ bubo::commanding::SerialCommandSource serialCommandServer;
 /** Serial command processor */
 bubo::commanding::CommandProcessor serialCommandProcessor(&serialCommandServer, &rotorController);
 
-bubo::RotorTelemetryProducer tmProducer(&rotorController);
+bubo::telemetry::EthernetUdpTmChannel udpTmOutChannel;
+bubo::telemetry::RotorTelemetryProducer tmProducer(&udpTmOutChannel, &rotorController);
 
 
 bool azLabelSet = false;
@@ -134,11 +126,7 @@ void updateDisplay() {
 
 long previousAz = -99999;
 void outputTelemetry() {
-	// TODO nasty get azimuth from rotor for check; azimuth is also gathered by tm producer.
-//	long az = rotorController.getCurrentAzimuth();
-//	if (az != previousAz) {
-	bubo::TelemetryPayload azTmPayload = tmProducer.produceTelemetry(bubo::RotorTelemetryProducer::POSITION);
-//		Serial.println(tmServer.remoteIP());
+	bubo::telemetry::TelemetryPayload azTmPayload = tmProducer.produceTelemetry(bubo::telemetry::RotorTelemetryProducer::POSITION);
 	IPAddress broadcast(192, 168, 0, 255);
 	int check = tmServer.getUdp().beginPacket(broadcast, 4023);
 	if(check != 1) {
@@ -147,9 +135,6 @@ void outputTelemetry() {
 	}
 	tmServer.getUdp().write(azTmPayload.getPayload(), azTmPayload.getSize());
 	tmServer.getUdp().endPacket();
-//		previousAz = az;
-//	}
-
 }
 
 bool checkForTmClient() {
