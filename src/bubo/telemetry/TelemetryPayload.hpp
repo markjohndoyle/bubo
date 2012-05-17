@@ -19,6 +19,10 @@ class TelemetryPayload {
 				payload(newPayload), size(newPayloadSize) {
 		}
 
+		TelemetryPayload(byte* newPayload, size_t newPayloadSize) :
+				payload(newPayload), size(newPayloadSize) {
+		}
+
 		~TelemetryPayload() {
 			if (payload != 0) {
 				free(payload);

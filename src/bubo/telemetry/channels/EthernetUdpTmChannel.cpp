@@ -22,6 +22,10 @@ EthernetUdpTmChannel::~EthernetUdpTmChannel() {
 }
 
 
+void EthernetUdpTmChannel::output(const TelemetryPayload* const tmPayload, RotorTelemetryProducer::TM_TYPE type) {
+
+}
+
 void EthernetUdpTmChannel::output(const TelemetryPayload* const tmPayload) {
 	int check = udp.beginPacket(config.broadcastAddress, config.broadcastPort);
 	if(check != 1) {
@@ -35,10 +39,12 @@ void EthernetUdpTmChannel::output(const TelemetryPayload* const tmPayload) {
 
 bool EthernetUdpTmChannel::saveSettings() {
 	// TODO implement method
+	return false;
 }
 
 bool EthernetUdpTmChannel::loadSettings() {
 	// TODO implement method
+	return false;
 }
 
 

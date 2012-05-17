@@ -9,7 +9,7 @@
 #define ROTORTELEMETRYPRODUCER_HPP_
 
 #include "TelemetryPayload.hpp"
-#include "channels/TelemetryOutputChannel.hpp"
+
 #include <iterator> // must declare iterator befre vector in avr-stl
 #include <vector>
 
@@ -18,6 +18,8 @@ namespace rotor {
 	class Rotor;
 }
 namespace telemetry {
+
+class TelemetryOutputChannel;
 
 class RotorTelemetryProducer {
 	public:
@@ -36,6 +38,10 @@ class RotorTelemetryProducer {
 		std::vector<TelemetryOutputChannel*> outputChannels;
 
 		TelemetryPayload* produceTelemetry(TM_TYPE type) const;
+
+		static const uint16_t BASE_PORT = 4023;
+
+		uint16_t nextTmPort;
 };
 
 } /* namespace telemetry */
