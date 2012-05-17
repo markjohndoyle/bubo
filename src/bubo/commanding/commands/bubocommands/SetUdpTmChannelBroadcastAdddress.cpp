@@ -33,7 +33,7 @@ bool SetUdpTmChannelBroadcastAdddress::processArgument(byte arg) {
 
 	// Get int value of ASCII numeric char.
 	int8_t intValue = arg - 48;
-	if (intValue > 0 || intValue < 9) {
+	if (intValue > 0 && intValue < 9) {
 		switch (processedArgs) {
 			case 0: {
 				firstOctet = intValue * 100;
