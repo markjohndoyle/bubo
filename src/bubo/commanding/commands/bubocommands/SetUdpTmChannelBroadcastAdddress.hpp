@@ -25,6 +25,14 @@ class SetUdpTmChannelBroadcastAdddress: public BaseCommand {
 		bool processArgument(byte arg);
 
 		void execute() const;
+
+	private:
+		telemetry::EthernetUdpTmChannel* channel;
+
+		uint8_t firstOctet;
+		uint8_t secondOctet;
+		uint8_t thirdOctet;
+		uint8_t fourthOctet;
 };
 
 } /* namespace commands */
