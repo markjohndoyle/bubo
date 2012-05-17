@@ -11,6 +11,10 @@
 namespace bubo {
 namespace telemetry {
 
+/**
+ * Interface for outputting a Bubo telemetry payload. TelemetryOutputChannels use
+ * whatever methodology they wish to output TM.
+ */
 class TelemetryPayload;
 
 class TelemetryOutputChannel {

@@ -24,6 +24,7 @@ public:
 	virtual ~EthernetUdpTmChannel();
 
 	void output(const TelemetryPayload* const tmPayload);
+	void output(const TelemetryPayload* const tmPayload, uint16_t port);
 
 	bool saveSettings();
 
@@ -44,6 +45,11 @@ private:
 		IPAddress broadcastAddress;
 		uint16_t broadcastPort;
 	} config;
+
+
+	int beginUdpPacket(uint16_t port);
+
+	void sendPacket(const TelemetryPayload* const tmPayload);
 
 };
 
