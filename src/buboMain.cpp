@@ -185,7 +185,7 @@ void setup() {
 
 	rotorController = bubo::rotor::YaesuRotor();
 
-	commandServer.initCmdServer();
+	//commandServer.initCmdServer();
 
 	if (!error) {
 		lcd.clear();
