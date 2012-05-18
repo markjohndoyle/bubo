@@ -26,16 +26,15 @@ int EthernetUdpTmChannel::beginUdpPacket(uint16_t port) {
 
 }
 
-}
-
 void EthernetUdpTmChannel::sendPacket(const TelemetryPayload* const tmPayload) {
 	udp.write(tmPayload->getPayload(), tmPayload->getSize());
 	udp.endPacket();
 	udp.stop();
 }
 
-void EthernetUdpTmChannel::output(const TelemetryPayload* const tmPayload, uint16_t port) {
-	if (beginUdpPacket(port) != -1) {
+void EthernetUdpTmChannel::output(const TelemetryPayload* const tmPayload, RotorTelemetryProducer::TM_TYPE type) {
+	const uint16_t port = BASE_PORT + type;
+	if(beginUdpPacket(port) != -1) {
 		sendPacket(tmPayload);
 	}
 	else {

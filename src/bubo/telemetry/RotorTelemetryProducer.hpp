@@ -38,10 +38,6 @@ class RotorTelemetryProducer {
 		std::vector<TelemetryOutputChannel*> outputChannels;
 
 		TelemetryPayload* produceTelemetry(TM_TYPE type) const;
-
-		static const uint16_t BASE_PORT = 4023;
-
-		uint16_t nextTmPort;
 };
 
 } /* namespace telemetry */

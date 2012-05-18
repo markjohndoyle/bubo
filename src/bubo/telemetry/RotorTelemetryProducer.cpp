@@ -74,7 +74,6 @@ TelemetryPayload* RotorTelemetryProducer::produceTelemetry(TM_TYPE type) const {
 void RotorTelemetryProducer::sendTelemetry(TM_TYPE type) const {
 	TelemetryPayload* payload = produceTelemetry(type);
 	for(uint16_t i = 0; i < outputChannels.size(); i++) {
-		uint16_t port = BASE_PORT + type;
 		outputChannels[i]->output(payload, type);
 	}
 

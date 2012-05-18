@@ -5,8 +5,8 @@
  *      Author: Mark Doyle
  */
 
-#ifndef TELEMETRYSERVER_H_
-#define TELEMETRYSERVER_H_
+#ifndef TELEMETRYOUTPUTCHANNEL_H_
+#define TELEMETRYOUTPUTCHANNEL_H_
 
 #include "Ethernet/EthernetUdp.h"
 #include "bubo/network/BuboEthernet.hpp"
@@ -24,7 +24,6 @@ public:
 	virtual ~EthernetUdpTmChannel();
 
 	void output(const TelemetryPayload* const tmPayload);
-	void output(const TelemetryPayload* const tmPayload, uint16_t port);
 
 	void output(const TelemetryPayload* const tmPayload, RotorTelemetryProducer::TM_TYPE);
 
@@ -53,9 +52,11 @@ private:
 
 	void sendPacket(const TelemetryPayload* const tmPayload);
 
+	static const uint16_t BASE_PORT = 4023;
+
 };
 
 }
 }
 
-#endif /* TELEMETRYSERVER_H_ */
+#endif /* TELEMETRYOUTPUTCHANNEL_H_ */
