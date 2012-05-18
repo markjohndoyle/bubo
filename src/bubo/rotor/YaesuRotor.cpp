@@ -20,8 +20,8 @@ const uint8_t YaesuRotor::PIN_EL_UP = 8;
 const uint8_t YaesuRotor::PIN_EL_DOWN = 9;
 const uint8_t YaesuRotor::PIN_AZ_LEFT = 6;
 const uint8_t YaesuRotor::PIN_AZ_RIGHT = 5;
-const uint8_t YaesuRotor::PIN_AZ_INPUT = A2;
-const uint8_t YaesuRotor::PIN_EL_INPUT = A3;
+const uint8_t YaesuRotor::PIN_AZ_INPUT = A3;
+const uint8_t YaesuRotor::PIN_EL_INPUT = A2;
 
 const long YaesuRotor::MAX_AZIMUTH = 45000L;
 const long YaesuRotor::MAX_ELEVATION = 18000L;
@@ -234,7 +234,7 @@ bool YaesuRotor::loadSettings() {
 
 long YaesuRotor::getCurrentAzimuth() {
 	int sensorValue = analogRead(PIN_AZ_INPUT);
-	Serial.print("AZIMUTH VOLT: ");Serial.println(sensorValue);
+//	Serial.print("AZIMUTH VOLT: ");Serial.println(sensorValue);
 	//	currentAzimuth = ((sensorValue * 10000) / AZ_SCALE_FACTOR) + config.azimuthaAdZeroOffset;
 	// y = (x-a)/(b-a) * (d-c) + c
 	// Where
@@ -244,16 +244,16 @@ long YaesuRotor::getCurrentAzimuth() {
 	// b = 921 i.e. highest analogue value
 	// c = 0 i.e. lowest degree 0 so can remove from equation
 	// d = 450 i.e. highest degree
-	double azimuth = ((double)sensorValue - ADC_MIN_ROTOR) / (ADC_MAX_ROTOR - ADC_MIN_ROTOR) * MAX_ROTOR_AZ;
-	Serial.print("AZIMUTH: ");Serial.println(azimuth);
-	//return azimuth * 10000;
+	//double azimuth = ((double)sensorValue - ADC_MIN_ROTOR_AZ) / (ADC_MAX_ROTOR_AZ - ADC_MIN_ROTOR_AZ) * MAX_ROTOR_AZ;
+	double azimuth = (double)sensorValue * 10000 * MAX_ROTOR_AZ / ADC_MAX_ROTOR_AZ;
+//	Serial.print("AZIMUTH: ");Serial.println(azimuth);
 	return azimuth;
 }
 
 
 long YaesuRotor::getCurrentElevation() {
 	int sensorValue = analogRead(PIN_EL_INPUT);
-	Serial.print("ELEVATION VOLT: ");Serial.println(sensorValue);
+//	Serial.print("ELEVATION VOLT: ");Serial.println(sensorValue);
 	//	currentElevation = (sensorValue * 10000) / EL_SCALE_FACTOR + config.elevationAdZeroOffset;
 	// y = (x-a)/(b-a) * (d-c) + c
 	// Where
@@ -263,7 +263,9 @@ long YaesuRotor::getCurrentElevation() {
 	// b = 921 i.e. highest analogue value
 	// c = 0 i.e. lowest degree 0 so can remove from equation
 	// d = 180 i.e. highest degree
-	return ((double)sensorValue - ADC_MIN_ROTOR) / (ADC_MAX_ROTOR - ADC_MIN_ROTOR) * MAX_ROTOR_EL;
+	//double elevation = ((double)sensorValue - ADC_MIN_ROTOR_EL) / (ADC_MAX_ROTOR_EL - ADC_MIN_ROTOR_EL) * MAX_ROTOR_EL;
+	double elevation = (double)sensorValue * 10000 * MAX_ROTOR_EL / ADC_MAX_ROTOR_EL;
+	return elevation;
 }
 
 

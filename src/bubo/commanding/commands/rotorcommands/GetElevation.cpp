@@ -23,11 +23,10 @@ bool GetElevation::processArgument(byte arg) {
 void GetElevation::execute() const {
 	long Elevation = rotor->getCurrentElevation() / 10000;
 	// FIXME round this!
-	Serial.print("Elevation DEGREES: ");Serial.println(Elevation);
+	//Serial.print("Elevation DEGREES: ");Serial.println(Elevation);
 	String a(Elevation);
 
 	for (int i = a.length(); i < 3; i++) {
-		Serial.println("Padding.");
 		a = '0' + a;
 	}
 	String out = "+0" + a; // FIXME

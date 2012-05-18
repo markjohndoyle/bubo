@@ -30,11 +30,10 @@ bool GetAzimuth::processArgument(byte arg) {
 void GetAzimuth::execute() const {
 	long azimuth = rotor->getCurrentAzimuth() / 10000;
 	// FIXME round this!
-	Serial.print("AZIMUTH DEGREES: ");Serial.println(azimuth);
+	//Serial.print("AZIMUTH DEGREES: ");Serial.println(azimuth);
 	String a(azimuth);
 
 	for (int i = a.length(); i < 3; i++) {
-		Serial.println("Padding.");
 		a = '0' + a;
 	}
 	String out = "+0" + a; // FIXME
