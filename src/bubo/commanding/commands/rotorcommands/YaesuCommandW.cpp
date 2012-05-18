@@ -49,6 +49,7 @@ bool YaesuCommandW::processArgument(byte arg) {
 			// separator space
 			case 3: {
 				// ignore it
+				processedArgs++;
 				result = true;
 				break;
 			}
