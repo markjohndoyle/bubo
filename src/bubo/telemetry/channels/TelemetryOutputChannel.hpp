@@ -2,11 +2,14 @@
  * Channel.hpp
  *
  *  Created on: 16 May 2012
- *      Author: mark
+ *      Author: Mark Doyle
  */
 
 #ifndef TELEMETRYOUTPUTCHANNEL_HPP_
 #define TELEMETRYOUTPUTCHANNEL_HPP_
+
+#include "bubo/telemetry/RotorTelemetryProducer.hpp"
+#include "bubo/telemetry/TelemetryPayload.hpp"
 
 namespace bubo {
 namespace telemetry {
@@ -15,8 +18,6 @@ namespace telemetry {
  * Interface for outputting a Bubo telemetry payload. TelemetryOutputChannels use
  * whatever methodology they wish to output TM.
  */
-class TelemetryPayload;
-
 class TelemetryOutputChannel {
 	public:
 		virtual ~TelemetryOutputChannel() {};
@@ -26,6 +27,9 @@ class TelemetryOutputChannel {
 		 * for example, as ascii over serial, in a udp packet, egal!
 		 */
 		virtual void output(const TelemetryPayload* const tmPayload) = 0;
+
+		virtual void output(const TelemetryPayload* const tmPayload, RotorTelemetryProducer::TM_TYPE) = 0;
+
 };
 
 } /* namespace telemetry */

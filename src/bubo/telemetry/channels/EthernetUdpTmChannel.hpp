@@ -26,6 +26,8 @@ public:
 	void output(const TelemetryPayload* const tmPayload);
 	void output(const TelemetryPayload* const tmPayload, uint16_t port);
 
+	void output(const TelemetryPayload* const tmPayload, RotorTelemetryProducer::TM_TYPE);
+
 	bool saveSettings();
 
 	bool loadSettings();

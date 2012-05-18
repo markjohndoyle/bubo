@@ -119,9 +119,9 @@ class YaesuRotor : public Rotor, public PersistentSettings {
 		static const byte PIN_EL_INPUT;
 
 		/** Current elevation as received by the rotor on PIN_ELEVATION */
-		long currentElevation;
+		//long currentElevation;
 		/** Current elevation as received by the rotor on PIN_AZIMUTH */
-		long currentAzimuth;
+		//long currentAzimuth;
 
 		unsigned long rotorMoveUpdateInterval;
 
@@ -131,10 +131,6 @@ class YaesuRotor : public Rotor, public PersistentSettings {
 		long targetAzimuth;
 		long targetElevation;
 
-		void updateAzimuth();
-
-		void updateElevation();
-
 		void stopAzimuthRotor();
 
 		void stopElevationRotor();
@@ -143,9 +139,12 @@ class YaesuRotor : public Rotor, public PersistentSettings {
 
 		void rotateElevation();
 
-		static const double ADC_MIN_ROTOR = 409.0;
-		static const double ADC_MAX_ROTOR = 921.0;
+		//static const double ADC_MIN_ROTOR_AZ = 0.0;
+		static const double ADC_MAX_ROTOR_AZ = 425.0;
 		static const double MAX_ROTOR_AZ = 450.0;
+
+		//static const double ADC_MIN_ROTOR_EL = 0;
+		static const double ADC_MAX_ROTOR_EL = 1024.0;
 		static const double MAX_ROTOR_EL = 180.0;
 
 		struct rotorConfig {

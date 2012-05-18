@@ -1,37 +1,30 @@
-/*
- * GetAzimuth.cpp
- *
- *  Created on: 15 May 2012
- *      Author: mark
- */
-
-#include "GetAzimuth.hpp"
+#include "GetElevation.hpp"
 #include "bubo/rotor/Rotor.hpp"
 
 namespace bubo {
 namespace commanding {
 namespace commands {
 
-GetAzimuth::GetAzimuth(bubo::rotor::Rotor* targetRotor)
+GetElevation::GetElevation(bubo::rotor::Rotor* targetRotor)
 : RotorCommand(targetRotor, 0)
 {
-	Serial.println("GetAzimuth constructor");
+	Serial.println("GetElevation constructor");
 	Serial.flush();
 }
 
-GetAzimuth::~GetAzimuth() {
+GetElevation::~GetElevation() {
 	// TODO Auto-generated destructor stub
 }
 
-bool GetAzimuth::processArgument(byte arg) {
+bool GetElevation::processArgument(byte arg) {
 	return false;
 }
 
-void GetAzimuth::execute() const {
-	long azimuth = rotor->getCurrentAzimuth() / 10000;
+void GetElevation::execute() const {
+	long Elevation = rotor->getCurrentElevation() / 10000;
 	// FIXME round this!
-	//Serial.print("AZIMUTH DEGREES: ");Serial.println(azimuth);
-	String a(azimuth);
+	//Serial.print("Elevation DEGREES: ");Serial.println(Elevation);
+	String a(Elevation);
 
 	for (int i = a.length(); i < 3; i++) {
 		a = '0' + a;

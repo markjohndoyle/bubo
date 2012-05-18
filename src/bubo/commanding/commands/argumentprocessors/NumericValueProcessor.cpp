@@ -11,7 +11,7 @@ namespace bubo {
 namespace commanding {
 namespace commands {
 
-NumericValueProcessor::NumericValueProcessor(MODE byteMode) : ArgumentProcessor(byteMode) {
+NumericValueProcessor::NumericValueProcessor(MODE byteMode) : ArgumentProcessor(byteMode), value(0) {
 }
 
 NumericValueProcessor::~NumericValueProcessor() {

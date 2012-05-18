@@ -30,7 +30,7 @@ public:
 	void constructCommand(char id);
 
 private:
-	static const int NUM_OF_COMMANDS = 6;
+	static const int NUM_OF_COMMANDS = 8;
 
 	char commandIds[NUM_OF_COMMANDS];
 

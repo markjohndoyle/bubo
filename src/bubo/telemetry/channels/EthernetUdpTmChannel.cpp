@@ -23,6 +23,9 @@ EthernetUdpTmChannel::~EthernetUdpTmChannel() {
 
 int EthernetUdpTmChannel::beginUdpPacket(uint16_t port) {
 	return udp.beginPacket(config.broadcastAddress, port);
+
+}
+
 }
 
 void EthernetUdpTmChannel::sendPacket(const TelemetryPayload* const tmPayload) {
@@ -51,10 +54,12 @@ void EthernetUdpTmChannel::output(const TelemetryPayload* const tmPayload) {
 
 bool EthernetUdpTmChannel::saveSettings() {
 	// TODO implement method
+	return false;
 }
 
 bool EthernetUdpTmChannel::loadSettings() {
 	// TODO implement method
+	return false;
 }
 
 void EthernetUdpTmChannel::setBroadcastAddress(IPAddress newAddress) {

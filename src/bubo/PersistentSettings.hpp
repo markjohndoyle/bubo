@@ -12,6 +12,8 @@ namespace bubo {
 
 class PersistentSettings {
 	public:
+		virtual ~PersistentSettings() {};
+
 		virtual bool saveSettings() = 0;
 
 		virtual bool loadSettings() = 0;

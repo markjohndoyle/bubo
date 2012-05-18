@@ -26,16 +26,16 @@ bubo::telemetry::EthernetUdpTmChannel tmServer;
 
 bubo::rotor::YaesuRotor rotorController;
 
-bubo::commanding::EthernetTcpCommandServer commandServer;
+//bubo::commanding::EthernetTcpCommandServer commandServer;
 /** Ethernet command processor */
-bubo::commanding::CommandProcessor tcpCommandProcessor(&commandServer, &rotorController);
+//bubo::commanding::CommandProcessor tcpCommandProcessor(&commandServer, &rotorController);
 
 bubo::commanding::SerialCommandSource serialCommandServer;
 /** Serial command processor */
 bubo::commanding::CommandProcessor serialCommandProcessor(&serialCommandServer, &rotorController);
 
-bubo::telemetry::EthernetUdpTmChannel udpTmOutChannel;
-bubo::telemetry::RotorTelemetryProducer tmProducer(&udpTmOutChannel, &rotorController);
+//bubo::telemetry::EthernetUdpTmChannel udpTmOutChannel;
+//bubo::telemetry::RotorTelemetryProducer tmProducer(&udpTmOutChannel, &rotorController);
 
 
 bool azLabelSet = false;
@@ -125,12 +125,12 @@ void updateDisplay() {
 }
 
 void outputTelemetry() {
-	tmProducer.sendTelemetry(bubo::telemetry::RotorTelemetryProducer::POSITION);
+//	tmProducer.sendTelemetry(bubo::telemetry::RotorTelemetryProducer::POSITION);
 }
 
 
 void processCommands() {
-	tcpCommandProcessor.processCommands();
+//	tcpCommandProcessor.processCommands();
 	serialCommandProcessor.processCommands();
 }
 
@@ -155,7 +155,7 @@ void loop() {
 		// update rotor movement if necessary
 		if (elapsedTime - rtcLastRotorUpdate > rotorMoveUpdateInterval) {
 			rtcLastRotorUpdate = elapsedTime;
-//			rotorController.rotate();
+			rotorController.rotate();
 		}
 	}
 	// rtc overflow - just in case
@@ -167,6 +167,19 @@ void loop() {
 	outputTelemetry();
 
 	updateDisplay();
+
+	// debug output begin
+	//int az = analogRead(A3); //azimuth
+	//int el = analogRead(A2); // elevation
+
+	long az = rotorController.getCurrentAzimuth();
+	long el = rotorController.getCurrentElevation();
+
+	String azEl("Az: " + String(az) + " - El: " + String(el));
+	Serial.println(azEl);
+
+
+	// debug output end
 }
 
 
@@ -185,7 +198,7 @@ void setup() {
 
 	rotorController = bubo::rotor::YaesuRotor();
 
-	commandServer.initCmdServer();
+//	commandServer.initCmdServer();
 
 	if (!error) {
 		lcd.clear();

@@ -9,6 +9,7 @@
 #include "bubo/commanding/commands/rotorcommands/YaesuCommandW.hpp"
 #include "bubo/commanding/commands/rotorcommands/SetRotorBiasCommand.hpp"
 #include "bubo/commanding/commands/rotorcommands/GetAzimuth.hpp"
+#include "bubo/commanding/commands/rotorcommands/GetElevation.hpp"
 #include "bubo/rotor/Rotor.hpp"
 
 namespace bubo {
@@ -24,10 +25,12 @@ RotorCommandFactory::RotorCommandFactory(Rotor* targetRotor)
 	: rotor(targetRotor) {
 	commandIds[0] = 'w';
 	commandIds[1] = 'W';
-	commandIds[2] = 'b';
-	commandIds[3] = 'B';
+	commandIds[2] = 'x';
+	commandIds[3] = 'X';
 	commandIds[4] = 'c';
 	commandIds[5] = 'C';
+	commandIds[6] = 'b';
+	commandIds[7] = 'B';
 
 }
 
@@ -67,11 +70,14 @@ void RotorCommandFactory::instantiateConcreteCommand(char id) {
 	if (id == 'w' || id == 'W') {
 		commandUnderConstruction = new YaesuCommandW(rotor);
 	}
-	else if (id == 'b' || id == 'B') {
+	else if (id == 'x' || id == 'X') {
 		commandUnderConstruction = new SetRotorBiasCommand(rotor);
 	}
 	else if (id == 'c' || id == 'C') {
 		commandUnderConstruction = new GetAzimuth(rotor);
+	}
+	else if (id == 'b' || id == 'B') {
+		commandUnderConstruction = new GetElevation(rotor);
 	}
 }
 
