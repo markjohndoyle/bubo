@@ -76,12 +76,15 @@ class YaesuRotor : public Rotor, public PersistentSettings {
 		void setBias(long newBias);
 
 		void setRotateAzimuth(AZIMUTH_ROTATE rotationState);
+		void setRotateElevation(ELEVATION_ROTATE rotationState);
 
 		void setAzimuthZeroOffset(long offset);
 
 		bool loadSettings();
 
 		bool saveSettings();
+
+		static const int SCALE_FACTOR = 10;
 
 	private:
 		/** The start address in EEPROM of the rotorconfiguration */
@@ -96,8 +99,8 @@ class YaesuRotor : public Rotor, public PersistentSettings {
 		 * the scale factor should be 100 * (1023 / 450) for the azimuth
 		 * the scale factor should be 100 * (1023 / 180) for the elevation
 		 */
-		static const long AZ_SCALE_FACTOR;
-		static const long EL_SCALE_FACTOR;
+//		static const long AZ_SCALE_FACTOR;
+//		static const long EL_SCALE_FACTOR;
 
 		/** elevation rotor up control line */
 		static const byte PIN_EL_UP;

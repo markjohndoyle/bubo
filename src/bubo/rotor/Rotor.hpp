@@ -14,7 +14,8 @@ namespace rotor {
 
 class Rotor {
 	public:
-		enum AZIMUTH_ROTATE {CLOCKWISE, ANTICLOCKWISE, STOP};
+		enum AZIMUTH_ROTATE {CLOCKWISE, ANTICLOCKWISE, STOP_AZ};
+		enum ELEVATION_ROTATE {UP, DOWN, STOP_EL};
 
 		virtual ~Rotor() {};
 
@@ -25,6 +26,7 @@ class Rotor {
 		virtual void setTargetElevation(long elevation) = 0;
 
 		virtual void setRotateAzimuth(AZIMUTH_ROTATE rotationState) = 0;
+		virtual void setRotateElevation(ELEVATION_ROTATE rotationState) = 0;
 
 		virtual void setBias(long newBias) = 0;
 

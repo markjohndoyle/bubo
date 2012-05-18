@@ -169,8 +169,8 @@ void loop() {
 	updateDisplay();
 
 	// debug output begin
-	//int az = analogRead(A3); //azimuth
-	//int el = analogRead(A2); // elevation
+//	int az = analogRead(A3); //azimuth
+//	int el = analogRead(A2); // elevation
 
 	long az = rotorController.getCurrentAzimuth();
 	long el = rotorController.getCurrentElevation();
@@ -193,7 +193,7 @@ void setup() {
 	lcd.print("Bubo booting...");
 
 	// initialise serial port:
-	Serial.begin(9600);
+	Serial.begin(115200);
 	Serial.println("Booting...");
 
 	rotorController = bubo::rotor::YaesuRotor();

@@ -18,8 +18,8 @@ const int YaesuRotor::CONFIG_EEPROM_ADDRESS = 0x01;
 
 const uint8_t YaesuRotor::PIN_EL_UP = 8;
 const uint8_t YaesuRotor::PIN_EL_DOWN = 9;
-const uint8_t YaesuRotor::PIN_AZ_LEFT = 6;
-const uint8_t YaesuRotor::PIN_AZ_RIGHT = 5;
+const uint8_t YaesuRotor::PIN_AZ_LEFT = 5;
+const uint8_t YaesuRotor::PIN_AZ_RIGHT = 6;
 const uint8_t YaesuRotor::PIN_AZ_INPUT = A3;
 const uint8_t YaesuRotor::PIN_EL_INPUT = A2;
 
@@ -30,13 +30,13 @@ const long YaesuRotor::MAX_ELEVATION = 18000L;
  * Coefficient used to convert the analogue azimuth voltage into a degrees based upon the
  * Arduino's 10-bit ADC and the Rotor's maximum azimuth range.
  */
-const long YaesuRotor::AZ_SCALE_FACTOR = 98;
+//const long YaesuRotor::AZ_SCALE_FACTOR = 98;
 
 /**
  * Coefficient used to convert the analogue elevation voltage into a degrees based upon the
  * Arduino's 10-bit ADC and the Rotor's maximum elevation range.
  */
-const long YaesuRotor::EL_SCALE_FACTOR = 284;
+//const long YaesuRotor::EL_SCALE_FACTOR = 284;
 
 
 YaesuRotor::YaesuRotor()
@@ -48,7 +48,7 @@ YaesuRotor::YaesuRotor()
 	config.configPresentFlag = 0xFF;
 	config.azimuthaAdZeroOffset = 0;
 	config.elevationAdZeroOffset = 0;
-	config.bias = 10000;
+	config.bias = 5;
 
 	// Initialise digital pins for output.
 	pinMode(PIN_EL_UP, OUTPUT);
@@ -75,11 +75,11 @@ void YaesuRotor::setRotorMoveUpdateInterval(unsigned long rotorMoveUpdateInterva
 }
 
 void YaesuRotor::setTargetAzimuth(long azimuth) {
-	targetAzimuth = azimuth;
+	targetAzimuth = azimuth * SCALE_FACTOR;
 }
 
 void YaesuRotor::setTargetElevation(long elevation) {
-	targetElevation = elevation;
+	targetElevation = elevation * SCALE_FACTOR;
 }
 
 void YaesuRotor::rotate() {
@@ -105,48 +105,50 @@ void YaesuRotor::rotate() {
 
 void YaesuRotor::rotateAzimuth() {
 	// calculate rotor move
+	Serial.println("Target Azimuth: " + String(targetAzimuth));
+	Serial.println("Current Azimuth: " + String(getCurrentAzimuth()));
 	long azDelta = targetAzimuth - getCurrentAzimuth();
 	// adjust move if necessary
 	// adjust move if > 180 degrees
-	if (azDelta > 18000) {
-		azDelta = azDelta - 180;
-	}
-	else {
-		// adjust move if < -180 degrees
-		if (azDelta < -18000) {
-			azDelta = azDelta + 18000;
-		}
-	}
+//	if (azDelta > 180l * SCALE_FACTOR) {
+//		azDelta = azDelta - 180l * SCALE_FACTOR;
+//	}
+//	else {
+//		// adjust move if < -180 degrees
+//		if (azDelta < -180l * SCALE_FACTOR) {
+//			azDelta = azDelta + 180l * SCALE_FACTOR;
+//		}
+//	}
 
 	if (azDelta > 0) {
-		rotatingAzimuth = true;
-		digitalWrite(PIN_AZ_LEFT, LOW);
-		digitalWrite(PIN_AZ_RIGHT, HIGH);
+		setRotateAzimuth(CLOCKWISE);
+		Serial.println("AZ Going clockwise, delta: " + String(azDelta));
 	}
-	else {
-		if (azDelta < 0) {
-			rotatingAzimuth = true;
-			digitalWrite(PIN_AZ_RIGHT, LOW);
-			digitalWrite(PIN_AZ_LEFT, HIGH);
-		}
+	else if (azDelta < 0) {
+		setRotateAzimuth(ANTICLOCKWISE);
+		Serial.println("AZ Going counterclockwise, delta: " + String(azDelta));
+	} else {
+		stopAzimuthRotor();
 	}
 }
 
 void YaesuRotor::rotateElevation() {
 	// calculate rotor move
+	Serial.println("Target Elevation: " + String(targetElevation));
+	Serial.println("Current Elevation: " + String(getCurrentElevation()));
 	long elDelta = targetElevation - getCurrentElevation();
+	Serial.print("EL delta:");
+	Serial.println(elDelta);
+
+
 
 	if (elDelta > 0) {
-		rotatingElevation = true;
-		digitalWrite(PIN_EL_DOWN, LOW);
-		digitalWrite(PIN_EL_UP, HIGH);
+		Serial.println("EL going UP, delta: " + String(elDelta));
+		setRotateElevation(UP);
 	}
-	else {
-		if (elDelta < 0) {
-			rotatingElevation = true;
-			digitalWrite(PIN_EL_UP, LOW);
-			digitalWrite(PIN_EL_DOWN, HIGH);
-		}
+	else if (elDelta < 0) {
+		Serial.println("EL going DOWN, delta: " + String(elDelta));
+		setRotateElevation(DOWN);
 	}
 }
 
@@ -190,10 +192,33 @@ void YaesuRotor::setRotateAzimuth(AZIMUTH_ROTATE rotationState) {
 			rotatingAzimuth = true;
 			break;
 		}
-		case STOP: {
+		case STOP_AZ: {
 			digitalWrite(PIN_AZ_LEFT, LOW);
 			digitalWrite(PIN_AZ_RIGHT, LOW);
 			rotatingAzimuth = false;
+			break;
+		}
+	}
+}
+
+void YaesuRotor::setRotateElevation(ELEVATION_ROTATE rotationState) {
+	switch(rotationState) {
+		case (UP): {
+			digitalWrite(PIN_EL_UP, HIGH);
+			digitalWrite(PIN_EL_DOWN, LOW);
+			rotatingElevation = true;
+			break;
+		}
+		case (DOWN): {
+			digitalWrite(PIN_EL_UP, LOW);
+			digitalWrite(PIN_EL_DOWN, HIGH);
+			rotatingElevation = true;
+			break;
+		}
+		case (STOP_EL): {
+			digitalWrite(PIN_EL_UP, LOW);
+			digitalWrite(PIN_EL_DOWN, LOW);
+			rotatingElevation = true;
 			break;
 		}
 	}
@@ -235,7 +260,7 @@ bool YaesuRotor::loadSettings() {
 long YaesuRotor::getCurrentAzimuth() {
 	int sensorValue = analogRead(PIN_AZ_INPUT);
 //	Serial.print("AZIMUTH VOLT: ");Serial.println(sensorValue);
-	//	currentAzimuth = ((sensorValue * 10000) / AZ_SCALE_FACTOR) + config.azimuthaAdZeroOffset;
+	//	currentAzimuth = ((sensorValue * SCALE_FACTOR) / AZ_SCALE_FACTOR) + config.azimuthaAdZeroOffset;
 	// y = (x-a)/(b-a) * (d-c) + c
 	// Where
 	// x = sensor value
@@ -245,7 +270,7 @@ long YaesuRotor::getCurrentAzimuth() {
 	// c = 0 i.e. lowest degree 0 so can remove from equation
 	// d = 450 i.e. highest degree
 	//double azimuth = ((double)sensorValue - ADC_MIN_ROTOR_AZ) / (ADC_MAX_ROTOR_AZ - ADC_MIN_ROTOR_AZ) * MAX_ROTOR_AZ;
-	double azimuth = (double)sensorValue * 10000 * MAX_ROTOR_AZ / ADC_MAX_ROTOR_AZ;
+	double azimuth = (double)sensorValue * SCALE_FACTOR * MAX_ROTOR_AZ / ADC_MAX_ROTOR_AZ;
 //	Serial.print("AZIMUTH: ");Serial.println(azimuth);
 	return azimuth;
 }
@@ -254,7 +279,7 @@ long YaesuRotor::getCurrentAzimuth() {
 long YaesuRotor::getCurrentElevation() {
 	int sensorValue = analogRead(PIN_EL_INPUT);
 //	Serial.print("ELEVATION VOLT: ");Serial.println(sensorValue);
-	//	currentElevation = (sensorValue * 10000) / EL_SCALE_FACTOR + config.elevationAdZeroOffset;
+	//	currentElevation = (sensorValue * SCALE_FACTOR) / EL_SCALE_FACTOR + config.elevationAdZeroOffset;
 	// y = (x-a)/(b-a) * (d-c) + c
 	// Where
 	// x = sensor value
@@ -264,7 +289,7 @@ long YaesuRotor::getCurrentElevation() {
 	// c = 0 i.e. lowest degree 0 so can remove from equation
 	// d = 180 i.e. highest degree
 	//double elevation = ((double)sensorValue - ADC_MIN_ROTOR_EL) / (ADC_MAX_ROTOR_EL - ADC_MIN_ROTOR_EL) * MAX_ROTOR_EL;
-	double elevation = (double)sensorValue * 10000 * MAX_ROTOR_EL / ADC_MAX_ROTOR_EL;
+	double elevation = (double)sensorValue * SCALE_FACTOR * MAX_ROTOR_EL / ADC_MAX_ROTOR_EL;
 	return elevation;
 }
 

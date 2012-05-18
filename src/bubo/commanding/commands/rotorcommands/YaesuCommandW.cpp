@@ -63,8 +63,6 @@ bool YaesuCommandW::processArgument(byte arg) {
 			case 5: {
 				elevation = elevation + (arg - 48);
 				processedArgs++;
-				azimuth = azimuth * 100;
-				elevation = elevation * 100;
 				result = true;
 				break;
 			}

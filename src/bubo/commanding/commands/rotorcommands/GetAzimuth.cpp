@@ -7,6 +7,7 @@
 
 #include "GetAzimuth.hpp"
 #include "bubo/rotor/Rotor.hpp"
+#include "bubo/rotor/YaesuRotor.hpp"
 
 namespace bubo {
 namespace commanding {
@@ -28,7 +29,7 @@ bool GetAzimuth::processArgument(byte arg) {
 }
 
 void GetAzimuth::execute() const {
-	long azimuth = rotor->getCurrentAzimuth() / 10000;
+	long azimuth = rotor->getCurrentAzimuth() / bubo::rotor::YaesuRotor::SCALE_FACTOR;
 	// FIXME round this!
 	//Serial.print("AZIMUTH DEGREES: ");Serial.println(azimuth);
 	String a(azimuth);

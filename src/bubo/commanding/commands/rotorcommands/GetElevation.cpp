@@ -1,5 +1,6 @@
 #include "GetElevation.hpp"
 #include "bubo/rotor/Rotor.hpp"
+#include "bubo/rotor/YaesuRotor.hpp"
 
 namespace bubo {
 namespace commanding {
@@ -21,7 +22,7 @@ bool GetElevation::processArgument(byte arg) {
 }
 
 void GetElevation::execute() const {
-	long Elevation = rotor->getCurrentElevation() / 10000;
+	long Elevation = rotor->getCurrentElevation() / bubo::rotor::YaesuRotor::SCALE_FACTOR;
 	// FIXME round this!
 	//Serial.print("Elevation DEGREES: ");Serial.println(Elevation);
 	String a(Elevation);
