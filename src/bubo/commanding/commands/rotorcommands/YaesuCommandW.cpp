@@ -14,8 +14,7 @@ namespace commands {
 using namespace rotor;
 
 YaesuCommandW::YaesuCommandW(Rotor* targetRotor)
-	: RotorCommand(targetRotor, 6) {
-	Serial.println("Instantiating YaesuCommandW!");
+	: RotorCommand(targetRotor, 7) {
 }
 
 YaesuCommandW::~YaesuCommandW() {
@@ -33,41 +32,48 @@ bool YaesuCommandW::processArgument(byte arg) {
 				result = true;
 				break;
 			}
+			// second azimuth character
 			case 1: {
 				azimuth = azimuth + (arg - 48) * 10;
 				processedArgs++;
 				result = true;
 				break;
 			}
-				// final azimuth character
+			// final azimuth character
 			case 2: {
 				azimuth = azimuth + (arg - 48);
 				processedArgs++;
 				result = true;
 				break;
 			}
-				// first elevation character
+			// separated space
 			case 3: {
+				// ignore it
+				result = true;
+				break;
+			}
+			// first elevation character
+			case 4: {
 				elevation = (arg - 48) * 100;
 				processedArgs++;
 				result = true;
 				break;
 			}
-			case 4: {
+			case 5: {
 				elevation = elevation + (arg - 48) * 10;
 				processedArgs++;
 				result = true;
 				break;
 			}
 				// last elevation character
-			case 5: {
+			case 6: {
 				elevation = elevation + (arg - 48);
 				processedArgs++;
 				result = true;
 				break;
 			}
 			default: {
-				// should never get here
+				// should never get here. Do nothing and let result remain false.
 				break;
 			}
 	}
@@ -75,8 +81,6 @@ bool YaesuCommandW::processArgument(byte arg) {
 }
 
 void YaesuCommandW::execute() const {
-	Serial.println(String(rotor->getCurrentAzimuth()) + ":" + String(rotor->getCurrentElevation()));
-	Serial.println("Executing YaesuCommandW - tarAz = " + String(azimuth) + " tarEz = " + String(elevation));
 	rotor->setTargetAzimuth(azimuth);
 	rotor->setTargetElevation(elevation);
 }
