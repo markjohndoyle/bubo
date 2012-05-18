@@ -48,7 +48,7 @@ YaesuRotor::YaesuRotor()
 	config.configPresentFlag = 0xFF;
 	config.azimuthaAdZeroOffset = 0;
 	config.elevationAdZeroOffset = 0;
-	config.bias = 90;
+	config.bias = 10000;
 
 	// Initialise digital pins for output.
 	pinMode(PIN_EL_UP, OUTPUT);
