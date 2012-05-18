@@ -48,7 +48,7 @@ YaesuRotor::YaesuRotor()
 	config.configPresentFlag = 0xFF;
 	config.azimuthaAdZeroOffset = 0;
 	config.elevationAdZeroOffset = 0;
-	config.bias = 5;
+	config.bias = 1 * SCALE_FACTOR;
 
 	// Initialise digital pins for output.
 	pinMode(PIN_EL_UP, OUTPUT);
@@ -103,8 +103,8 @@ void YaesuRotor::rotate() {
 
 void YaesuRotor::rotateAzimuth() {
 	// calculate rotor move
-	Serial.println("Target Azimuth: " + String(targetAzimuth));
-	Serial.println("Current Azimuth: " + String(getCurrentAzimuth()));
+//	Serial.println("Target Azimuth: " + String(targetAzimuth));
+//	Serial.println("Current Azimuth: " + String(getCurrentAzimuth()));
 	long azDelta = targetAzimuth - getCurrentAzimuth();
 	// adjust move if necessary
 	// adjust move if > 180 degrees
@@ -120,11 +120,11 @@ void YaesuRotor::rotateAzimuth() {
 
 	if (azDelta > 0) {
 		setRotateAzimuth(CLOCKWISE);
-		Serial.println("AZ Going clockwise, delta: " + String(azDelta));
+//		Serial.println("AZ Going clockwise, delta: " + String(azDelta));
 	}
 	else if (azDelta < 0) {
 		setRotateAzimuth(ANTICLOCKWISE);
-		Serial.println("AZ Going counterclockwise, delta: " + String(azDelta));
+//		Serial.println("AZ Going counterclockwise, delta: " + String(azDelta));
 	} else {
 		stopAzimuthRotor();
 	}
@@ -132,20 +132,20 @@ void YaesuRotor::rotateAzimuth() {
 
 void YaesuRotor::rotateElevation() {
 	// calculate rotor move
-	Serial.println("Target Elevation: " + String(targetElevation));
-	Serial.println("Current Elevation: " + String(getCurrentElevation()));
+//	Serial.println("Target Elevation: " + String(targetElevation));
+//	Serial.println("Current Elevation: " + String(getCurrentElevation()));
 	long elDelta = targetElevation - getCurrentElevation();
-	Serial.print("EL delta:");
-	Serial.println(elDelta);
+//	Serial.print("EL delta:");
+//	Serial.println(elDelta);
 
 
 
 	if (elDelta > 0) {
-		Serial.println("EL going UP, delta: " + String(elDelta));
+//		Serial.println("EL going UP, delta: " + String(elDelta));
 		setRotateElevation(UP);
 	}
 	else if (elDelta < 0) {
-		Serial.println("EL going DOWN, delta: " + String(elDelta));
+//		Serial.println("EL going DOWN, delta: " + String(elDelta));
 		setRotateElevation(DOWN);
 	}
 }
