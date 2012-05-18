@@ -119,9 +119,9 @@ class YaesuRotor : public Rotor, public PersistentSettings {
 		static const byte PIN_EL_INPUT;
 
 		/** Current elevation as received by the rotor on PIN_ELEVATION */
-		long currentElevation;
+		//long currentElevation;
 		/** Current elevation as received by the rotor on PIN_AZIMUTH */
-		long currentAzimuth;
+		//long currentAzimuth;
 
 		unsigned long rotorMoveUpdateInterval;
 
@@ -130,10 +130,6 @@ class YaesuRotor : public Rotor, public PersistentSettings {
 
 		long targetAzimuth;
 		long targetElevation;
-
-		void updateAzimuth();
-
-		void updateElevation();
 
 		void stopAzimuthRotor();
 
