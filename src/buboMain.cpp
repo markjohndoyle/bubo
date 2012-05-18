@@ -155,7 +155,7 @@ void loop() {
 		// update rotor movement if necessary
 		if (elapsedTime - rtcLastRotorUpdate > rotorMoveUpdateInterval) {
 			rtcLastRotorUpdate = elapsedTime;
-//			rotorController.rotate();
+			rotorController.rotate();
 		}
 	}
 	// rtc overflow - just in case
