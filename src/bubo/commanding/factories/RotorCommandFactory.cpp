@@ -50,7 +50,7 @@ void RotorCommandFactory::buildCommand(byte data) {
 		}
 
 		if(commandUnderConstruction->isComplete()){
-			Serial.println("Command complete");
+//			Serial.println("Command complete");
 			commandComplete();
 		}
 	}
@@ -60,8 +60,8 @@ void RotorCommandFactory::buildCommand(byte data) {
  * This is the only place you need to alter when adding new rotor commands.
  */
 void RotorCommandFactory::instantiateConcreteCommand(char id) {
-	Serial.println("Supported! instantiating command");
-	Serial.flush();
+//	Serial.println("Supported! instantiating command");
+//	Serial.flush();
 	if(commandUnderConstruction != 0) {
 		delete commandUnderConstruction;
 		commandUnderConstruction = 0;
@@ -82,7 +82,7 @@ void RotorCommandFactory::instantiateConcreteCommand(char id) {
 }
 
 bool RotorCommandFactory::commandSupported(char id) {
-	Serial.println("checking support for id " + String(id));
+//	Serial.println("checking support for id " + String(id));
 	bool result = false;
 	for (int i = 0; i < NUM_OF_COMMANDS; i++) {
 		char supportedId = commandIds[i];
@@ -97,7 +97,7 @@ bool RotorCommandFactory::commandSupported(char id) {
 void RotorCommandFactory::constructCommand(char id) {
 	instantiateConcreteCommand(id);
 	if(commandUnderConstruction->isComplete()){
-		Serial.println("Command complete");
+//		Serial.println("Command complete");
 		commandComplete();
 	}
 }

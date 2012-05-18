@@ -37,15 +37,15 @@ void CommandProcessor::processCommands() {
 	// If there is then we treat the byte as a command id and find out which factory to  use.
 	if(inByte != -1) {
 		if(!commandInConstruction) {
-			Serial.println("No command under construction, finding factory....");
+//			Serial.println("No command under construction, finding factory....");
 			for(int i = 0; i < CommandProcessor::NUM_OF_FACTORIES; i++) {
-				Serial.println("Checking factory " + String(i));
+//				Serial.println("Checking factory " + String(i));
 				if(commandFactories[i] == 0) {
 					Serial.println("NULL POINTER @ Factory " + String(i));
 					break;
 				}
 				if(commandFactories[i]->commandSupported((char)inByte)) {
-					Serial.println("Found a factory for id " + String(inByte));
+//					Serial.println("Found a factory for id " + String(inByte));
 					activeFactory = commandFactories[i];
 					activeFactory->addListener(this);
 					commandInConstruction = true;
@@ -58,7 +58,7 @@ void CommandProcessor::processCommands() {
 			}
 		}
 		else {
-			Serial.println("Building command");
+//			Serial.println("Building command");
 			activeFactory->buildCommand(inByte);
 		}
 	}
@@ -66,7 +66,7 @@ void CommandProcessor::processCommands() {
 
 
 void CommandProcessor::commandComplete(commands::BaseCommand* command) {
-	Serial.println("Command executing....");
+//	Serial.println("Command executing....");
 	commandInConstruction = false;
 	command->execute();
 	delete command;

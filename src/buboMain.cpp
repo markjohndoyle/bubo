@@ -172,11 +172,11 @@ void loop() {
 //	int az = analogRead(A3); //azimuth
 //	int el = analogRead(A2); // elevation
 
-	long az = rotorController.getCurrentAzimuth();
-	long el = rotorController.getCurrentElevation();
-
-	String azEl("Az: " + String(az) + " - El: " + String(el));
-	Serial.println(azEl);
+//	long az = rotorController.getCurrentAzimuth();
+//	long el = rotorController.getCurrentElevation();
+//
+//	String azEl("Az: " + String(az) + " - El: " + String(el));
+//	Serial.println(azEl);
 
 
 	// debug output end

@@ -9,8 +9,6 @@ namespace commands {
 GetElevation::GetElevation(bubo::rotor::Rotor* targetRotor)
 : RotorCommand(targetRotor, 0)
 {
-	Serial.println("GetElevation constructor");
-	Serial.flush();
 }
 
 GetElevation::~GetElevation() {

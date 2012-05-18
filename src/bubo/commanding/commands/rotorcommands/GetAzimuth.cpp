@@ -16,8 +16,6 @@ namespace commands {
 GetAzimuth::GetAzimuth(bubo::rotor::Rotor* targetRotor)
 : RotorCommand(targetRotor, 0)
 {
-	Serial.println("GetAzimuth constructor");
-	Serial.flush();
 }
 
 GetAzimuth::~GetAzimuth() {

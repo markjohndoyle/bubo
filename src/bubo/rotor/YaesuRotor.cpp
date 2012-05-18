@@ -84,9 +84,8 @@ void YaesuRotor::setTargetElevation(long elevation) {
 
 void YaesuRotor::rotate() {
 	// see if azimuth move is required
-	Serial.println("Bias = " + String(config.bias));
+//	Serial.println("Bias = " + String(config.bias));
 	if ((abs(getCurrentAzimuth() - targetAzimuth) > config.bias)) {
-//			updateAzimuthMove();
 		rotateAzimuth();
 	}
 	else {
@@ -95,7 +94,6 @@ void YaesuRotor::rotate() {
 
 	// see if an elevation move is required
 	if (abs(getCurrentElevation() - targetElevation) > config.bias) {
-//			updateElevationMove();
 		rotateElevation();
 	}
 	else {
