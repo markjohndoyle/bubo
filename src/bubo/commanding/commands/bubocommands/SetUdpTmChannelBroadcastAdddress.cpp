@@ -42,7 +42,7 @@ bool SetUdpTmChannelBroadcastAdddress::processArgument(byte arg) {
 				break;
 			}
 			case 1: {
-				firstOctet += intValue * 100;
+				firstOctet += intValue * 10;
 				result = true;
 				processedArgs++;
 				break;
