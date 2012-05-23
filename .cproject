@@ -33,6 +33,7 @@
 								<option id="de.innot.avreclipse.assembler.option.debug.level.1683385950" name="Generate Debugging Info" superClass="de.innot.avreclipse.assembler.option.debug.level" value="de.innot.avreclipse.assembler.option.debug.level.none" valueType="enumerated"/>
 								<option id="de.innot.avreclipse.asm.option.include.paths.1353996327" name="#include paths for preprocessor(-I)" superClass="de.innot.avreclipse.asm.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/lhome1/klugj/Downloads/arduino-1.0/libraries"/>
+									<listOptionValue builtIn="false" value="/usr/share/arduino/libraries"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Users\mark\development\arduino-1.0\libraries&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/arduinoCoreIncludes}&quot;"/>
@@ -45,6 +46,8 @@
 								<option id="de.innot.avreclipse.compiler.option.optimize.1093597358" name="Optimization Level" superClass="de.innot.avreclipse.compiler.option.optimize" value="de.innot.avreclipse.compiler.optimize.size" valueType="enumerated"/>
 								<option id="de.innot.avreclipse.compiler.option.incpath.1961926390" name="Include Paths (-I)" superClass="de.innot.avreclipse.compiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/share/arduino/libraries"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Users\mark\development\arduino-1.0\libraries&quot;"/>
 									<listOptionValue builtIn="false" value="/lhome1/klugj/Downloads/arduino-1.0/libraries"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/util}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/MegaIncludes}&quot;"/>
@@ -67,9 +70,11 @@
 								<option id="de.innot.avreclipse.cppcompiler.option.optimize.802376349" name="Optimization Level" superClass="de.innot.avreclipse.cppcompiler.option.optimize" value="de.innot.avreclipse.cppcompiler.optimize.size" valueType="enumerated"/>
 								<option id="de.innot.avreclipse.cppcompiler.option.incpath.2079403118" name="Include Paths (-I)" superClass="de.innot.avreclipse.cppcompiler.option.incpath" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;C:\Users\mark\development\arduino-1.0\libraries&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/share/arduino/libraries"/>
+									<listOptionValue builtIn="false" value="/home/mark/development/avr-stl/include"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Users\mark\development/avr-stl/include&quot;"/>
 									<listOptionValue builtIn="false" value="/lhome1/klugj/Downloads/arduino-1.0/libraries"/>
 									<listOptionValue builtIn="false" value="/lhome1/klugj/Downloads/avr-stl/include"/>
-									<listOptionValue builtIn="false" value="&quot;C:\Users\mark\development/avr-stl/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/src/util}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/MegaIncludes}&quot;"/>
