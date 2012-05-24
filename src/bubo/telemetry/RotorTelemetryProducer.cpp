@@ -29,7 +29,7 @@ RotorTelemetryProducer::RotorTelemetryProducer(vector<TelemetryOutputChannel*> t
 	outputChannels = tmOutputChannels;
 }
 
-TelemetryPayload* RotorTelemetryProducer::produceTelemetry(TM_TYPE type) const {
+void RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
 	long azimuth = -9999;
 	long elevation = -9999;
 	switch (type) {
@@ -67,13 +67,20 @@ TelemetryPayload* RotorTelemetryProducer::produceTelemetry(TM_TYPE type) const {
 	else {
 		Serial.println("Failed to allocate bytes for TM");
 	}
-
-	return new TelemetryPayload(bytes, 9);
+//	if (payload) {
+//		delete payload;
+//	}
+	Serial.println("before tm payload");
+	Serial.flush();
+	payload = new TelemetryPayload(bytes, 9);
+	Serial.println("after tm payload");
+	Serial.flush();
 }
 
-void RotorTelemetryProducer::sendTelemetry(TM_TYPE type) const {
-	TelemetryPayload* payload = produceTelemetry(type);
+void RotorTelemetryProducer::sendTelemetry(TM_TYPE type) {
+	produceTelemetry(type);
 	for(uint16_t i = 0; i < outputChannels.size(); i++) {
+		Serial.println("UDP outputting TM on channel " + String(i) + " port number: " + String(type));
 		outputChannels[i]->output(payload, type);
 	}
 

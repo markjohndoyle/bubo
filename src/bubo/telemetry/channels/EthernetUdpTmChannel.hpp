@@ -35,6 +35,8 @@ public:
 
 	void setBroadcastPort(uint16_t newPort);
 
+	void initTmChannel();
+
 private:
 	/** The UDP sender and receiver */
 	EthernetUDP udp;
@@ -46,7 +48,6 @@ private:
 		IPAddress broadcastAddress;
 		uint16_t broadcastPort;
 	} config;
-
 
 	int beginUdpPacket(uint16_t port);
 

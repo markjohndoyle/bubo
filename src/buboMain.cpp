@@ -26,16 +26,16 @@ bubo::telemetry::EthernetUdpTmChannel tmServer;
 
 bubo::rotor::YaesuRotor rotorController;
 
-//bubo::commanding::EthernetTcpCommandServer commandServer;
+bubo::commanding::EthernetTcpCommandServer commandServer;
 /** Ethernet command processor */
-//bubo::commanding::CommandProcessor tcpCommandProcessor(&commandServer, &rotorController);
+bubo::commanding::CommandProcessor tcpCommandProcessor(&commandServer, &rotorController);
 
 bubo::commanding::SerialCommandSource serialCommandServer;
 /** Serial command processor */
 bubo::commanding::CommandProcessor serialCommandProcessor(&serialCommandServer, &rotorController);
 
-//bubo::telemetry::EthernetUdpTmChannel udpTmOutChannel;
-//bubo::telemetry::RotorTelemetryProducer tmProducer(&udpTmOutChannel, &rotorController);
+bubo::telemetry::EthernetUdpTmChannel udpTmOutChannel;
+bubo::telemetry::RotorTelemetryProducer tmProducer(&udpTmOutChannel, &rotorController);
 
 
 bool azLabelSet = false;
@@ -125,7 +125,7 @@ void updateDisplay() {
 }
 
 void outputTelemetry() {
-//	tmProducer.sendTelemetry(bubo::telemetry::RotorTelemetryProducer::POSITION);
+	tmProducer.sendTelemetry(bubo::telemetry::RotorTelemetryProducer::POSITION);
 }
 
 
@@ -164,8 +164,9 @@ void loop() {
 		rtcLastDisplayUpdate = elapsedTime;
 	}
 
+	Serial.println("Main loop - before outputTelemetry()");
 	outputTelemetry();
-
+	Serial.println("Main loop - after outputTelemetry()");
 	updateDisplay();
 
 	// debug output begin
@@ -196,9 +197,14 @@ void setup() {
 	Serial.begin(115200);
 	Serial.println("Booting...");
 
+//	IPAddress localIpAddress = IPAddress(192, 168, 0, 20);
+//	Ethernet.begin(MAC, localIpAddress);
+
 	rotorController = bubo::rotor::YaesuRotor();
 
 //	commandServer.initCmdServer();
+
+	tmServer.initTmChannel();
 
 	if (!error) {
 		lcd.clear();

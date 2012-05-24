@@ -28,7 +28,7 @@ class RotorTelemetryProducer {
 		RotorTelemetryProducer(TelemetryOutputChannel* tmOutputChannel, rotor::Rotor* rotorInterface);
 		RotorTelemetryProducer(std::vector<TelemetryOutputChannel*> tmOutputChannels, rotor::Rotor* rotorInterface);
 
-		void sendTelemetry(TM_TYPE type) const;
+		void sendTelemetry(TM_TYPE type);
 
 	private:
 		rotor::Rotor* rotor;
@@ -37,7 +37,9 @@ class RotorTelemetryProducer {
 
 		std::vector<TelemetryOutputChannel*> outputChannels;
 
-		TelemetryPayload* produceTelemetry(TM_TYPE type) const;
+		void produceTelemetry(TM_TYPE type);
+
+		TelemetryPayload* payload;
 };
 
 } /* namespace telemetry */
