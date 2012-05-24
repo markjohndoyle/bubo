@@ -23,7 +23,7 @@ class TelemetryOutputChannel;
 
 class RotorTelemetryProducer {
 	public:
-		enum TM_TYPE { POSITION };
+		enum TM_TYPE { DEBUG_LOG = 1, POSITION = 0};
 
 		RotorTelemetryProducer(TelemetryOutputChannel* tmOutputChannel, rotor::Rotor* rotorInterface);
 		RotorTelemetryProducer(std::vector<TelemetryOutputChannel*> tmOutputChannels, rotor::Rotor* rotorInterface);

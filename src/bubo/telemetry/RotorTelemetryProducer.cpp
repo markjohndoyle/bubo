@@ -42,14 +42,14 @@ void RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
 	unsigned long int payloadSize = sizeof(long) * 2;
 	byte* const bytes = (byte*) ((malloc(payloadSize)));
 	if (bytes != NULL) {
-		bytes[1] = azimuth;
-		bytes[2] = azimuth << 8;
-		bytes[3] = azimuth << 16;
-		bytes[4] = azimuth << 24;
-		bytes[5] = elevation;
-		bytes[6] = elevation << 8;
-		bytes[7] = elevation << 16;
-		bytes[8] = elevation << 24;
+		bytes[0] = azimuth;
+		bytes[1] = azimuth >> 8;
+		bytes[2] = azimuth >> 16;
+		bytes[3] = azimuth >> 24;
+		bytes[4] = elevation;
+		bytes[5] = elevation >> 8;
+		bytes[6] = elevation >> 16;
+		bytes[7] = elevation >> 24;
 
 //		Serial.println("----------");
 //		Serial.println(azimuth);
@@ -72,7 +72,7 @@ void RotorTelemetryProducer::produceTelemetry(TM_TYPE type) {
 //	}
 	Serial.println("before tm payload");
 	Serial.flush();
-	payload = new TelemetryPayload(bytes, 9);
+	payload = new TelemetryPayload(bytes, sizeof(long) * 2);
 	Serial.println("after tm payload");
 	Serial.flush();
 }
